@@ -1,26 +1,214 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #0a0a0f;
+  --foreground: #ffffff;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'SF Mono', 'SFMono-Regular', 'Fira Code', monospace;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: rgba(255, 56, 128, 0.3);
+}
+
+/* ── Liquid Ambient Orbs ── */
+@keyframes liquid-orbit {
+  0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); }
+  25% { transform: translate(30px, -40px) scale(1.08) rotate(90deg); }
+  50% { transform: translate(-20px, 20px) scale(0.95) rotate(180deg); }
+  75% { transform: translate(25px, 30px) scale(1.05) rotate(270deg); }
+}
+
+@keyframes liquid-orbit-slow {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(-35px, 25px) scale(1.12); }
+  66% { transform: translate(20px, -30px) scale(0.9); }
+}
+
+.orb-1 {
+  animation: liquid-orbit 18s ease-in-out infinite;
+}
+.orb-2 {
+  animation: liquid-orbit-slow 22s ease-in-out infinite reverse;
+}
+.orb-3 {
+  animation: liquid-orbit 25s ease-in-out infinite 2s;
+}
+
+/* ── iOS Glass Card ── */
+.ios-glass {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.08) 0%,
+    rgba(255, 255, 255, 0.02) 50%,
+    rgba(255, 255, 255, 0.04) 100%
+  );
+  backdrop-filter: blur(40px) saturate(1.4);
+  -webkit-backdrop-filter: blur(40px) saturate(1.4);
+  border: 0.5px solid rgba(255, 255, 255, 0.08);
+}
+
+.ios-glass-light {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.12) 0%,
+    rgba(255, 255, 255, 0.03) 50%,
+    rgba(255, 255, 255, 0.06) 100%
+  );
+  backdrop-filter: blur(60px) saturate(1.5);
+  -webkit-backdrop-filter: blur(60px) saturate(1.5);
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
+}
+
+/* ── Pill styles ── */
+.ios-pill {
+  border-radius: 9999px;
+  padding: 0.375rem 0.875rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ios-pill-active {
+  background: linear-gradient(135deg, rgba(255, 56, 128, 0.35), rgba(120, 64, 255, 0.35));
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  border: 0.5px solid rgba(255, 255, 255, 0.12);
+  color: #fff;
+  box-shadow: 0 4px 20px rgba(255, 56, 128, 0.15);
+}
+
+.ios-pill-inactive {
+  color: rgba(255, 255, 255, 0.45);
+  border: 0.5px solid rgba(255, 255, 255, 0.06);
+}
+.ios-pill-inactive:hover {
+  color: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* ── Card glow on hover ── */
+.ios-card-glow {
+  position: relative;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.ios-card-glow::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(255, 56, 128, 0.2), rgba(120, 64, 255, 0.2), rgba(0, 200, 255, 0.2));
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  filter: blur(6px);
+}
+.ios-card-glow:hover::before {
+  opacity: 1;
+}
+
+/* ── Shimmer overlay ── */
+.ios-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+.ios-shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 35%,
+    rgba(255, 255, 255, 0.04) 45%,
+    rgba(255, 255, 255, 0.08) 50%,
+    rgba(255, 255, 255, 0.04) 55%,
+    transparent 65%
+  );
+  background-size: 200% 100%;
+  animation: shimmer-sweep 5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes shimmer-sweep {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ── Category accent gradient pills ── */
+.cat-politics-world { background: linear-gradient(135deg, rgba(255, 56, 128, 0.3), rgba(255, 159, 10, 0.3)); }
+.cat-technology { background: linear-gradient(135deg, rgba(0, 200, 255, 0.3), rgba(120, 64, 255, 0.3)); }
+.cat-finance-corporate { background: linear-gradient(135deg, rgba(50, 220, 100, 0.3), rgba(0, 200, 255, 0.3)); }
+.cat-sports { background: linear-gradient(135deg, rgba(255, 159, 10, 0.3), rgba(255, 56, 128, 0.3)); }
+
+/* ── Tick fadeIn ── */
+@keyframes fadeIn {
+  0% { opacity: 0; transform: translateY(4px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.animate-fadeIn { animation: fadeIn 0.3s ease-out; }
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.06); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.12); }
+
+/* ── Hide scrollbar utility ── */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ── News Grid Layout ── */
+.news-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  width: 100%;
+}
+
+.news-card:first-child {
+  grid-column: span 2;
+}
+
+.news-card {
+  min-height: 160px;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-meta {
+  margin-top: auto;
+}
+
+/* Responsive breakpoints */
+@media (max-width: 900px) {
+  .news-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .news-card:first-child {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 600px) {
+  .news-grid {
+    grid-template-columns: 1fr;
+  }
+  .news-card:first-child {
+    grid-column: span 1;
+  }
 }
