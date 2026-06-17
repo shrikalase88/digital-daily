@@ -49,7 +49,7 @@ export default function Footer() {
               {[
                 "NY Times", "BBC", "NPR", "CBC News",
                 "The Guardian", "ABC News", "NDTV", "Times of India", "The Hindu",
-                "The Verge", "TechCrunch", "Ars Technica", "Wired", "India Today Tech",
+                "The Verge", "TechCrunch", "Ars Technica", "Wired", "Google News India Tech",
                 "Bloomberg", "Yahoo Finance", "IMF", "Federal Reserve", "Economic Times", "Google News India", "LiveMint",
                 "Yahoo Sports", "BBC Sport", "Sky Sports", "CBS Sports", "Times of India Sports", "India Today Sports",
               ].map((s) => (

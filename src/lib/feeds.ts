@@ -25,7 +25,7 @@ const FEEDS: FeedConfig[] = [
   { url: "https://feeds.arstechnica.com/arstechnica/index", source: "Ars Technica", category: "Technology" },
   { url: "https://www.wired.com/feed/rss", source: "Wired", category: "Technology" },
   { url: "https://timesofindia.indiatimes.com/rssfeeds/1898192.cms", source: "Times of India Tech", category: "Technology" },
-  { url: "https://www.indiatoday.in/rss/1206591", source: "India Today Tech", category: "Technology" },
+  { url: "https://news.google.com/rss/search?q=india+technology+gadgets+smartphones&hl=en-IN&gl=IN&ceid=IN:en", source: "Google News India Tech", category: "Technology" },
 
   // Finance & Corporate
   { url: "https://seekingalpha.com/feed.xml", source: "Seeking Alpha", category: "Finance & Corporate" },
@@ -220,8 +220,11 @@ export async function aggregateNews(): Promise<Article[]> {
       seenUrl.add(urlKey);
       return true;
     })
-    .sort(
-      (a, b) =>
-        new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
-    );
+    .sort((a, b) => {
+      // Priority 1: Articles with images come first
+      if (a.imageUrl && !b.imageUrl) return -1;
+      if (!a.imageUrl && b.imageUrl) return 1;
+      // Priority 2: Then by publish date (newest first)
+      return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
+    });
 }
