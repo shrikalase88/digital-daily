@@ -103,7 +103,7 @@ export function LiveSportsTicker() {
   if (!loading && matches.length === 0) return null;
 
   return (
-    <div className="w-full border-b border-white/5 bg-slate-950/80 py-2 shrink-0 overflow-hidden">
+    <div className="ios-glass w-full rounded-none border-x-0 border-t-0 border-b border-white/[0.04] py-2 shrink-0 overflow-hidden">
       <div className="no-scrollbar mx-auto flex max-w-7xl items-center gap-3 overflow-x-auto px-4 sm:px-6 lg:px-8">
         <span className="flex shrink-0 items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-white/30">
           <span className="relative flex h-1.5 w-1.5">
@@ -128,7 +128,7 @@ export function LiveSportsTicker() {
           matches.map((match) => (
             <div
               key={match.id}
-              className="flex shrink-0 items-center gap-2 rounded-full border border-white/5 bg-slate-900 px-3 py-1.5"
+              className="flex shrink-0 items-center gap-2 rounded-full ios-glass px-3 py-1.5"
             >
               {/* Sport indicator dot — pulses only for live matches */}
               <span

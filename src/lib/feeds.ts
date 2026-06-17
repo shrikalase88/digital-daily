@@ -140,12 +140,12 @@ function extractUniversalImage(item: Parser.Item & Record<string, unknown>): str
       }
     }
 
-    // 5. HTML / oEmbed thumbnail fallback
+    // 5. content:encoded — many feeds embed images in full HTML content
     const htmlPayload = [
+      item["content:encoded"],
       item.content,
       item.summary,
       item.description,
-      item["content:encoded"],
     ]
       .filter(Boolean)
       .join(" ");
@@ -154,12 +154,27 @@ function extractUniversalImage(item: Parser.Item & Record<string, unknown>): str
       const ytMatch = htmlPayload.match(ytRegex);
       if (ytMatch?.[1]) return `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`;
 
+      // Match <img src="..."> — check for common image extensions or content images
       const imgRegex = /<img[^>]+(?:src|data-src|srcset|url)=["']([^"'\s>]+)["']/i;
       const match = htmlPayload.match(imgRegex);
       if (match?.[1]) {
         const cleaned = match[1].split(",")[0].trim().split(" ")[0];
         if (cleaned.startsWith("http")) return cleaned;
+        // Relative URL — skip, likely broken
       }
+
+      // Match og:image or twitter:image in meta tags embedded in content
+      const ogRegex = /(?:og:image|twitter:image)[^"']*content=["']([^"'\s>]+)["']/i;
+      const ogMatch = htmlPayload.match(ogRegex);
+      if (ogMatch?.[1] && ogMatch[1].startsWith("http")) return ogMatch[1];
+    }
+
+    // 6. content:encoded image without extension (broader match for CDN URLs)
+    const broadHtml = (item["content:encoded"] as string) || (item.content as string) || "";
+    if (broadHtml) {
+      const broadImgRegex = /<img[^>]+src=["'](https?:\/\/[^"'\s>]+)/i;
+      const broadMatch = broadHtml.match(broadImgRegex);
+      if (broadMatch?.[1]) return broadMatch[1];
     }
   } catch (err) {
     console.error("Image extraction error:", err);
@@ -211,7 +226,7 @@ export async function aggregateNews(): Promise<Article[]> {
 
   const seenTitle = new Set<string>();
   const seenUrl = new Set<string>();
-  return all
+  const deduped = all
     .filter((a) => {
       const titleKey = a.title.toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 80);
       const urlKey = a.url.replace(/https?:\/\/(www\.)?/i, "").replace(/\/$/, "").slice(0, 120);
@@ -220,11 +235,37 @@ export async function aggregateNews(): Promise<Article[]> {
       seenUrl.add(urlKey);
       return true;
     })
-    .sort((a, b) => {
-      // Priority 1: Articles with images come first
-      if (a.imageUrl && !b.imageUrl) return -1;
-      if (!a.imageUrl && b.imageUrl) return 1;
-      // Priority 2: Then by publish date (newest first)
-      return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
-    });
+    .sort((a, b) =>
+      new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
+    );
+
+  // Group by category, then interleave sources for diversity
+  const byCategory = new Map<string, Article[]>();
+  for (const a of deduped) {
+    const list = byCategory.get(a.category) || [];
+    list.push(a);
+    byCategory.set(a.category, list);
+  }
+
+  // Within each category, group by source then round-robin
+  const mixed: Article[] = [];
+  for (const [, articles] of byCategory) {
+    const bySource = new Map<string, Article[]>();
+    for (const a of articles) {
+      const src = a.source || "Unknown";
+      const list = bySource.get(src) || [];
+      list.push(a);
+      bySource.set(src, list);
+    }
+    const sources = Array.from(bySource.values());
+    let idx = 0;
+    while (sources.some((s) => s.length > 0)) {
+      if (sources[idx % sources.length].length > 0) {
+        mixed.push(sources[idx % sources.length].shift()!);
+      }
+      idx++;
+    }
+  }
+
+  return mixed;
 }

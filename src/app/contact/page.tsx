@@ -1,5 +1,11 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Mail, ShieldCheck, Globe } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Contact",
+  description: "Contact Digital Daily news aggregator.",
+};
 
 export default function ContactPage() {
   return (

@@ -1,12 +1,14 @@
 "use client";
 
-import { useState, useEffect, useTransition, useMemo } from "react";
+import { useState, useEffect, useTransition, useMemo, useCallback } from "react";
 import Navbar from "@/components/navbar";
 import HeroSection from "@/components/hero-section";
 import CategorySection from "@/components/category-section";
 import Sidebar from "@/components/sidebar";
 import NewsCard from "@/components/news-card";
 import Footer from "@/components/footer";
+import SearchBar from "@/components/search-bar";
+import { SkeletonHero, SkeletonGrid } from "@/components/skeleton-card";
 import { LiveSportsTicker } from "@/components/live-sports-ticker";
 import type { Article, Category } from "@/lib/types";
 import { CATEGORIES } from "@/lib/types";
@@ -31,6 +33,16 @@ export default function Home() {
   const [activeCategory, setActiveCategory] = useState<Category | null>(null);
   const [, startTransition] = useTransition();
   const [tickerIndex, setTickerIndex] = useState(0);
+  const [lastUpdated, setLastUpdated] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [disabledSources, setDisabledSources] = useState<string[]>([]);
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("digital-daily-disabled-sources");
+      if (stored) setDisabledSources(JSON.parse(stored));
+    } catch { /* ignore */ }
+  }, []);
 
   useEffect(() => {
     const url = new URL(window.location.href);
@@ -40,13 +52,14 @@ export default function Home() {
     }
   }, []);
 
-  async function fetchNews() {
+  const fetchNews = useCallback(async () => {
     try {
       const res = await fetch("/api/news");
       if (!res.ok) throw new Error("Failed");
       const data = await res.json();
       startTransition(() => {
         setArticles(data.articles || []);
+        setLastUpdated(new Date().toISOString());
         setError(null);
         setLoading(false);
       });
@@ -56,9 +69,9 @@ export default function Home() {
         setLoading(false);
       });
     }
-  }
+  }, []);
 
-  useEffect(() => { fetchNews(); }, []);
+  useEffect(() => { fetchNews(); }, [fetchNews]);
 
   useEffect(() => {
     if (articles.length === 0) return;
@@ -68,19 +81,57 @@ export default function Home() {
     return () => clearInterval(timer);
   }, [articles]);
 
-  const filtered = useMemo(() => {
-    if (!activeCategory) return articles;
-    return articles.filter((a) => a.category === activeCategory);
-  }, [articles, activeCategory]);
+  const allSources = useMemo(() => {
+    const sourceSet = new Set(articles.map((a) => a.source));
+    return Array.from(sourceSet).sort();
+  }, [articles]);
 
-  const featured = useMemo(
-    () => articles.filter((a) => a.imageUrl).slice(0, FEATURED_COUNT),
-    [articles]
+  const activeSources = useMemo(
+    () => allSources.filter((s) => !disabledSources.includes(s)),
+    [allSources, disabledSources]
   );
 
+  const handleSourceToggle = useCallback((source: string) => {
+    setDisabledSources((prev) => {
+      const next = prev.includes(source) ? prev.filter((s) => s !== source) : [...prev, source];
+      try { localStorage.setItem("digital-daily-disabled-sources", JSON.stringify(next)); } catch { /* ignore */ }
+      return next;
+    });
+  }, []);
+
+  const searchFiltered = useMemo(() => {
+    let result = articles;
+    if (disabledSources.length > 0) {
+      result = result.filter((a) => !disabledSources.includes(a.source));
+    }
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      result = result.filter(
+        (a) =>
+          a.title.toLowerCase().includes(q) ||
+          a.description.toLowerCase().includes(q) ||
+          a.source.toLowerCase().includes(q)
+      );
+    }
+    return result;
+  }, [articles, searchQuery, disabledSources]);
+
+  const filtered = useMemo(() => {
+    if (!activeCategory) return searchFiltered;
+    return searchFiltered.filter((a) => a.category === activeCategory);
+  }, [searchFiltered, activeCategory]);
+
+  const featured = useMemo(() => {
+    const withImages = searchFiltered.filter((a) => a.imageUrl);
+    // Prefer articles with images, but fill with imageless ones if few have images
+    if (withImages.length >= FEATURED_COUNT) return withImages.slice(0, FEATURED_COUNT);
+    const without = searchFiltered.filter((a) => !a.imageUrl);
+    return [...withImages, ...without].slice(0, FEATURED_COUNT);
+  }, [searchFiltered]);
+
   const trending = useMemo(
-    () => articles.slice(0, MAX_ARTICLES),
-    [articles]
+    () => searchFiltered.slice(0, MAX_ARTICLES),
+    [searchFiltered]
   );
 
   const latest = trending;
@@ -88,28 +139,29 @@ export default function Home() {
   const categorized = useMemo(() => {
     const map: Record<string, Article[]> = {};
     for (const cat of CATEGORIES) map[cat] = [];
-    for (const a of articles) {
+    for (const a of searchFiltered) {
       if (map[a.category]) map[a.category].push(a);
     }
     return map;
-  }, [articles]);
+  }, [searchFiltered]);
 
   const breakingArticles = useMemo(
     () =>
-      articles.filter(
+      searchFiltered.filter(
         (a) =>
           BREAKING_KEYWORDS.some((kw) =>
             a.title.toLowerCase().includes(kw)
           ) ||
           a.category === "Politics & World"
       ),
-    [articles]
+    [searchFiltered]
   );
 
   return (
     <div className="relative min-h-screen">
       <Navbar
         activeCategory={activeCategory}
+        lastUpdated={lastUpdated}
         onCategoryChange={(cat) => {
           setActiveCategory(cat);
           window.scrollTo({ top: 0, behavior: "smooth" });
@@ -147,9 +199,18 @@ export default function Home() {
         )}
 
         <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-          {!activeCategory && !loading && (
-            <HeroSection featured={featured} trending={trending} />
+          {!loading && !activeCategory && (
+            <div className="mb-6">
+              <SearchBar
+                onSearch={setSearchQuery}
+                sources={allSources}
+                activeSources={activeSources}
+                onSourceToggle={handleSourceToggle}
+              />
+            </div>
           )}
+
+          {!activeCategory && !loading && <HeroSection featured={featured} trending={trending} />}
 
           {activeCategory && !loading && (
             <div className="mb-6">
@@ -181,15 +242,8 @@ export default function Home() {
 
           {loading && (
             <div className="space-y-8">
-              <div className="ios-glass h-64 animate-pulse rounded-3xl" />
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                {[...Array(4)].map((_, i) => (
-                  <div
-                    key={i}
-                    className="ios-glass h-52 animate-pulse rounded-3xl"
-                  />
-                ))}
-              </div>
+              <SkeletonHero />
+              <SkeletonGrid />
             </div>
           )}
 
@@ -205,7 +259,7 @@ export default function Home() {
             </div>
           )}
 
-          {!loading && !error && !activeCategory && articles.length > 0 && (
+          {!loading && !error && !activeCategory && searchFiltered.length > 0 && (
             <div className="grid gap-12 lg:grid-cols-3">
               <div className="space-y-12 lg:col-span-2">
                 {CATEGORIES.map((cat) => (

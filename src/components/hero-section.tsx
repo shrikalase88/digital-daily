@@ -1,28 +1,9 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
 import Image from "next/image";
+import { useState } from "react";
 import type { Article } from "@/lib/types";
-
-function timeAgo(dateStr: string): string {
-  const now = Date.now();
-  const date = new Date(dateStr).getTime();
-  const diff = now - date;
-  const mins = Math.floor(diff / 60000);
-  if (mins < 1) return "just now";
-  if (mins < 60) return `${mins}m ago`;
-  const hours = Math.floor(diff / 3600000);
-  if (hours < 24) return `${hours}h ago`;
-  return `${Math.floor(diff / 86400000)}d ago`;
-}
-
-function useIsMounted() {
-  return useSyncExternalStore(
-    () => () => {},
-    () => true,
-    () => false
-  );
-}
+import { timeAgo, useIsMounted } from "@/lib/utils";
 
 export default function HeroSection({
   featured,
@@ -33,38 +14,39 @@ export default function HeroSection({
 }) {
   const main = featured[0];
   const isMounted = useIsMounted();
+  const [imgFailed, setImgFailed] = useState(false);
 
   if (!main) return null;
 
+  const showImage = main.imageUrl && !imgFailed;
+
   return (
-    <section className="mb-10">
+    <section className="mb-10" aria-label="Featured stories">
       <div className="grid gap-6 lg:grid-cols-3">
-        <div className="ios-glass ios-card-glow group relative overflow-hidden rounded-3xl lg:col-span-2">
+        <article className="ios-glass ios-card-glow group relative overflow-hidden rounded-3xl lg:col-span-2">
           <a
             href={main.url}
             target="_blank"
             rel="noopener noreferrer"
             className="block"
           >
-            {main.imageUrl ? (
+            {showImage ? (
               <div className="relative aspect-[16/9] overflow-hidden sm:aspect-[21/9]">
                 <Image
-                  src={main.imageUrl || ""}
+                  src={main.imageUrl!}
                   alt=""
                   fill
                   sizes="(max-width: 1024px) 100vw, 66vw"
                   loading="eager"
                   className="object-cover transition-transform duration-700 group-hover:scale-105"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).style.display = "none";
-                  }}
+                  onError={() => setImgFailed(true)}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
               </div>
             ) : (
-              <div className="flex aspect-[16/9] items-end bg-gradient-to-br from-white/[0.04] to-white/[0.01] p-6 sm:aspect-[21/9]">
+              <div className="flex aspect-[16/9] items-end bg-gradient-to-br from-white/[0.06] via-white/[0.02] to-transparent p-6 sm:aspect-[21/9]">
                 <div>
-                  <span className="mb-3 inline-block rounded-full border border-white/[0.06] bg-white/[0.04] px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-white/50">
+                  <span className="mb-3 inline-block rounded-full border border-white/[0.08] bg-white/[0.06] px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-white/60">
                     {main.category}
                   </span>
                   <h2 className="mb-2 text-xl font-bold leading-tight text-white sm:text-2xl lg:text-3xl">
@@ -83,7 +65,7 @@ export default function HeroSection({
             )}
             <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-8">
               <div className="mb-3 flex items-center gap-2">
-                <span className="rounded-full border border-white/[0.1] bg-black/30 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-white/80 backdrop-blur-2xl">
+                <span className="rounded-full ios-glass px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-white/80">
                   {main.category}
                 </span>
                 <span className="text-xs text-white/40">{main.source}</span>
@@ -101,9 +83,9 @@ export default function HeroSection({
               </p>
             </div>
           </a>
-        </div>
+        </article>
 
-        <div className="ios-glass rounded-3xl p-5">
+        <aside className="ios-glass rounded-3xl p-5">
           <div className="mb-4 flex items-center gap-2">
             <span className="h-1.5 w-1.5 rounded-full bg-cyan-400" />
             <h3 className="text-[11px] font-semibold uppercase tracking-[0.12em] text-white/40">
@@ -120,7 +102,7 @@ export default function HeroSection({
                 rel="noopener noreferrer"
                 className="group flex items-start gap-3 rounded-2xl border border-transparent px-3 py-2.5 transition-all hover:border-white/[0.04] hover:bg-white/[0.03]"
               >
-                <span className="mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-white/[0.04] text-[11px] font-bold text-white/20">
+                <span className="mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full ios-glass text-[11px] font-bold text-white/20">
                   {i + 1}
                 </span>
                 <div className="min-w-0 flex-1">
@@ -134,7 +116,7 @@ export default function HeroSection({
               </a>
             ))}
           </div>
-        </div>
+        </aside>
       </div>
     </section>
   );

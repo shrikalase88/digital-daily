@@ -3,93 +3,45 @@
 import { useState, useEffect, useTransition, useRef, useCallback } from "react";
 import { motion } from "framer-motion";
 import type { WeatherData } from "@/lib/types";
-import { handleError } from "@/lib/utils";
 
 export default function WeatherWidget() {
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [permissionDenied, setPermissionDenied] = useState(false);
   const [, startTransition] = useTransition();
   const [rotateX, setRotateX] = useState(0);
   const [rotateY, setRotateY] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
-  const requestLocation = useCallback(() => {
-    if (!navigator.geolocation) {
-      startTransition(() => {
-        setError("Geolocation not supported");
-        setLoading(false);
-      });
-      return;
-    }
-
+  const fetchWeather = useCallback(() => {
     startTransition(() => {
       setLoading(true);
       setError(null);
-      setPermissionDenied(false);
     });
 
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const lat = pos.coords.latitude;
-        const lon = pos.coords.longitude;
-        fetch(`/api/weather?lat=${lat}&lon=${lon}`)
-          .then((res) => {
-            if (!res.ok) throw new Error("Failed");
-            return res.json();
-          })
-          .then((data) => {
-            startTransition(() => {
-              setWeather(data);
-              setLoading(false);
-            });
-          })
-          .catch((error) => {
-            startTransition(() => {
-              handleError(error, setError, "Could not load weather");
-              setLoading(false);
-            });
-          });
-      },
-      (geoError) => {
-        // If geolocation fails, try IP-based fallback
-        fetch("/api/weather/fallback")
-          .then((res) => {
-            if (!res.ok) throw new Error("Fallback failed");
-            return res.json();
-          })
-          .then((data) => {
-            startTransition(() => {
-              setWeather(data);
-              setLoading(false);
-            });
-          })
-          .catch(() => {
-            startTransition(() => {
-              if (geoError.code === geoError.PERMISSION_DENIED) {
-                setPermissionDenied(true);
-                setError("Location permission denied");
-              } else {
-                setError(geoError.message || "Location access failed");
-              }
-              setLoading(false);
-            });
-          });
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 15000,
-        maximumAge: 300000, // Cache for 5 minutes
-      }
-    );
+    fetch("/api/weather/fallback")
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch weather");
+        return res.json();
+      })
+      .then((data) => {
+        startTransition(() => {
+          setWeather(data);
+          setLoading(false);
+        });
+      })
+      .catch(() => {
+        startTransition(() => {
+          setError("Could not load weather");
+          setLoading(false);
+        });
+      });
   }, []);
 
-  // Request location on load
   useEffect(() => {
-    requestLocation();
-  }, [requestLocation]);
+    fetchWeather();
+  }, [fetchWeather]);
 
   const handleMouseMove = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
@@ -130,7 +82,7 @@ export default function WeatherWidget() {
             : `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`,
         }}
       >
-        <div className="orbit-glow relative rounded-2xl border border-white/[0.06] bg-gradient-to-br from-white/[0.04] to-white/[0.01] p-6 backdrop-blur-xl">
+        <div className="ios-glass relative rounded-2xl p-6">
           <div className="relative z-10">
             <div className="mb-4 flex items-center gap-2">
               <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 animate-pulse" />
@@ -149,58 +101,19 @@ export default function WeatherWidget() {
               </div>
             )}
 
-            {!loading && permissionDenied && (
-              <div className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <span className="text-3xl text-amber-500 animate-bounce">📍</span>
-                  <div>
-                    <h4 className="text-sm font-semibold text-white/90">Location Disabled</h4>
-                    <p className="text-[11px] text-white/40 leading-tight">We can&apos;t detect your local weather.</p>
-                  </div>
-                </div>
-
-                <div className="rounded-xl border border-white/[0.04] bg-white/[0.02] p-3.5 space-y-2">
-                  <p className="text-[11px] text-white/60 leading-relaxed font-medium">
-                    To show your local temperature, please:
-                  </p>
-                  <ol className="list-decimal list-inside text-[10px] text-white/45 space-y-1 leading-normal">
-                    <li>Click the lock/settings icon in your browser&apos;s address bar.</li>
-                    <li>Toggle the <strong>Location</strong> permission to <strong>Allow</strong> or <strong>Ask</strong>.</li>
-                    <li>Click below to refresh and load weather.</li>
-                  </ol>
-                </div>
-
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    requestLocation();
-                  }}
-                  className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500/20 to-blue-500/20 hover:from-cyan-500/35 hover:to-blue-500/35 border border-cyan-500/20 hover:border-cyan-500/40 py-2.5 px-4 text-xs font-semibold text-white/90 transition-all shadow-md active:scale-95 cursor-pointer"
-                >
-                  <svg className="h-3.5 w-3.5 animate-spin" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 6.577M3.98 9h5" />
-                  </svg>
-                  Retry Geolocation Request
-                </button>
-              </div>
-            )}
-
-            {!loading && !permissionDenied && error && (
+            {!loading && error && (
               <div className="space-y-3">
                 <p className="text-sm text-red-400/80">{error}</p>
                 <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    requestLocation();
-                  }}
-                  className="rounded-lg border border-white/[0.06] bg-white/[0.03] px-3 py-1.5 text-xs text-white/60 hover:bg-white/[0.06] hover:text-white/80 transition-all cursor-pointer"
+                  onClick={(e) => { e.stopPropagation(); fetchWeather(); }}
+                  className="rounded-lg ios-glass px-3 py-1.5 text-xs text-white/60 hover:text-white/80 transition-all cursor-pointer"
                 >
                   Retry
                 </button>
               </div>
             )}
 
-            {weather && !loading && !permissionDenied && (
+            {weather && !loading && (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -240,7 +153,7 @@ export default function WeatherWidget() {
                 </p>
 
                 <div className="grid grid-cols-2 gap-2">
-                  <div className="rounded-xl border border-white/[0.04] bg-white/[0.03] px-3.5 py-2.5">
+                  <div className="rounded-xl ios-glass px-3.5 py-2.5">
                     <span className="block text-[10px] uppercase tracking-wider text-white/30">
                       Humidity
                     </span>
@@ -248,7 +161,7 @@ export default function WeatherWidget() {
                       {weather.humidity}%
                     </span>
                   </div>
-                  <div className="rounded-xl border border-white/[0.04] bg-white/[0.03] px-3.5 py-2.5">
+                  <div className="rounded-xl ios-glass px-3.5 py-2.5">
                     <span className="block text-[10px] uppercase tracking-wider text-white/30">
                       Wind
                     </span>

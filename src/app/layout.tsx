@@ -12,12 +12,53 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const siteUrl = "https://digital-daily.vercel.app";
+
 export const metadata: Metadata = {
-  title: "Digital Daily",
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: "Digital Daily — Live News Aggregator",
+    template: "%s | Digital Daily",
+  },
   description:
-    "Curated news from 19 trusted sources worldwide. Politics & World, Technology, Finance & Corporate, Sports.",
+    "Curated live news from 26+ trusted sources worldwide. Politics & World, Technology, Finance & Corporate, Sports. Updated every 5 minutes.",
   icons: {
     icon: "/favicon.svg",
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: siteUrl,
+    siteName: "Digital Daily",
+    title: "Digital Daily — Live News Aggregator",
+    description:
+      "Curated live news from 26+ trusted sources worldwide. Politics & World, Technology, Finance & Corporate, Sports.",
+    images: [
+      {
+        url: "/opengraph-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Digital Daily — Live News Aggregator",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Digital Daily — Live News Aggregator",
+    description:
+      "Curated live news from 26+ trusted sources worldwide.",
+    images: ["/opengraph-image.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
   },
 };
 
