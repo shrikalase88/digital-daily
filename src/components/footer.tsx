@@ -18,7 +18,7 @@ export default function Footer() {
               </span>
             </div>
             <p className="text-sm leading-relaxed text-white/30">
-              Curated news from 19 trusted sources worldwide. Live across Politics & World,
+              Trusted news sources across worldwide. Live across Politics & World,
               Technology, Finance & Corporate, and Sports.
             </p>
           </div>
