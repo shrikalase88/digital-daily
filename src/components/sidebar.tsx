@@ -1,14 +1,36 @@
 "use client";
 
+import { useSyncExternalStore } from "react";
 import type { Article } from "@/lib/types";
-import { timeAgo } from "@/lib/utils";
 import WeatherWidget from "./weather-widget";
+
+function timeAgo(dateStr: string): string {
+  const now = Date.now();
+  const date = new Date(dateStr).getTime();
+  const diff = now - date;
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return "just now";
+  if (mins < 60) return `${mins}m ago`;
+  const hours = Math.floor(diff / 3600000);
+  if (hours < 24) return `${hours}h ago`;
+  return `${Math.floor(diff / 86400000)}d ago`;
+}
+
+function useIsMounted() {
+  return useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
+}
 
 export default function Sidebar({
   latestNews,
 }: {
   latestNews: Article[];
 }) {
+  const isMounted = useIsMounted();
+
   return (
     <aside className="space-y-6">
       {/* Reusable Weather Widget */}
@@ -36,7 +58,7 @@ export default function Sidebar({
                 {article.title}
               </p>
               <p className="mt-1 text-[11px] text-white/25">
-                {article.source} · {timeAgo(article.publishedAt)}
+                {article.source} · {isMounted ? timeAgo(article.publishedAt) : "just now"}
               </p>
             </a>
           ))}
