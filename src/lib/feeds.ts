@@ -15,24 +15,33 @@ const FEEDS: FeedConfig[] = [
   { url: "https://www.cbc.ca/webfeed/rss/rss-politics", source: "CBC News", category: "Politics & World" },
   { url: "https://www.theguardian.com/world/rss", source: "The Guardian", category: "Politics & World" },
   { url: "https://abcnews.go.com/abcnews/politicsheadlines", source: "ABC News", category: "Politics & World" },
+  { url: "https://feeds.feedburner.com/NDTV-LatestNews", source: "NDTV", category: "Politics & World" },
+  { url: "https://timesofindia.indiatimes.com/rssfeeds/296589292.cms", source: "Times of India", category: "Politics & World" },
+  { url: "https://www.thehindu.com/news/feeder/default.rss", source: "The Hindu", category: "Politics & World" },
 
   // Technology
   { url: "https://www.theverge.com/rss/index.xml", source: "The Verge", category: "Technology" },
   { url: "https://techcrunch.com/feed/", source: "TechCrunch", category: "Technology" },
   { url: "https://feeds.arstechnica.com/arstechnica/index", source: "Ars Technica", category: "Technology" },
   { url: "https://www.wired.com/feed/rss", source: "Wired", category: "Technology" },
+  { url: "https://timesofindia.indiatimes.com/rssfeeds/1898192.cms", source: "Times of India Tech", category: "Technology" },
+  { url: "https://www.indiatoday.in/rss/1206591", source: "India Today Tech", category: "Technology" },
 
   // Finance & Corporate
   { url: "https://seekingalpha.com/feed.xml", source: "Seeking Alpha", category: "Finance & Corporate" },
   { url: "https://www.investing.com/rss/news_1.rss", source: "Investing.com", category: "Finance & Corporate" },
   { url: "https://www.federalreserve.gov/feeds/press_all.xml", source: "Federal Reserve", category: "Finance & Corporate" },
   { url: "https://economictimes.indiatimes.com/markets/rssfeeds/2146842.cms", source: "Economic Times", category: "Finance & Corporate" },
+  { url: "https://news.google.com/rss/search?q=india+business+economy&hl=en-IN&gl=IN&ceid=IN:en", source: "Google News India", category: "Finance & Corporate" },
+  { url: "https://www.livemint.com/rss/markets", source: "LiveMint", category: "Finance & Corporate" },
 
   // Sports
   { url: "https://sports.yahoo.com/rss/", source: "Yahoo Sports", category: "Sports" },
   { url: "https://feeds.bbci.co.uk/sport/rss.xml", source: "BBC Sport", category: "Sports" },
   { url: "https://www.skysports.com/rss/12040", source: "Sky Sports", category: "Sports" },
   { url: "https://www.cbssports.com/rss/headlines/", source: "CBS Sports", category: "Sports" },
+  { url: "https://timesofindia.indiatimes.com/rssfeeds/4719148.cms", source: "Times of India Sports", category: "Sports" },
+  { url: "https://www.indiatoday.in/rss/1206605", source: "India Today Sports", category: "Sports" },
 ];
 
 function slugify(text: string): string {

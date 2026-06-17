@@ -1,121 +1,96 @@
 import { NextResponse } from "next/server";
 
 /**
- * ESPN Cricket API route.
- * Fetches live matches and recent results from multiple cricket leagues.
- * ESPN uses numeric league IDs for cricket.
+ * SportScore Cricket API route.
+ * Fetches live and recent cricket matches from SportScore (free, no API key).
+ * Attribution required: "Powered by SportScore" link.
  */
 
-interface EspnEvent {
-  id: string;
-  name?: string;
-  date?: string;
-  competitions?: Array<{
-    competitors: Array<{
-      team?: { abbreviation?: string; shortDisplayName?: string };
-      score?: string;
-    }>;
-    status?: {
-      type?: {
-        state?: string;
-        completed?: boolean;
-        detail?: string;
-        shortDetail?: string;
-      };
-      displayClock?: string;
-      period?: number;
-    };
-  }>;
+interface SportScoreMatch {
+  home: string;
+  away: string;
+  home_score: string | null;
+  away_score: string | null;
+  status: string;
+  status_text: string;
+  time: string;
+  competition: string;
+  url: string;
 }
 
-interface EspnResponse {
-  events?: EspnEvent[];
-  leagues?: Array<{ name?: string; abbreviation?: string }>;
+interface SportScoreResponse {
+  sport: string;
+  count: number;
+  matches: SportScoreMatch[];
 }
 
-// Key cricket leagues with their ESPN numeric IDs
-const CRICKET_LEAGUES = [
-  { id: "8039", label: "Cricket WC" },
-  { id: "8048", label: "IPL" },
-  { id: "8037", label: "Champions Trophy" },
-  { id: "8044", label: "Big Bash" },
-  { id: "8043", label: "Sheffield Shield" },
-  { id: "8053", label: "T20 Blast" },
+const MAX_AGE_MS = 24 * 60 * 60 * 1000; // 24 hours
+
+// Only ICC international competitions
+const INTERNATIONAL_KEYWORDS = [
+  "world",
+  "cup",
+  "icc",
+  "series",
+  "international",
+  "test series",
+  "odi series",
+  "t20 series",
 ];
 
-const MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
+function isInternationalMatch(competition: string): boolean {
+  const lower = competition.toLowerCase();
+  return INTERNATIONAL_KEYWORDS.some((kw) => lower.includes(kw));
+}
 
 export async function GET() {
   try {
-    const fetches = CRICKET_LEAGUES.map(async (league) => {
-      try {
-        const res = await fetch(
-          `https://site.api.espn.com/apis/site/v2/sports/cricket/${league.id}/scoreboard`,
-          { next: { revalidate: 60 } }
-        );
-        if (!res.ok) return [];
-
-        const data: EspnResponse = await res.json();
-        const events = data.events || [];
-        const now = Date.now();
-
-        return events
-          .filter((event) => {
-            const comp = event.competitions?.[0];
-            const state = comp?.status?.type?.state;
-            // Include live matches
-            if (state === "in") return true;
-            // Include completed matches from the past 24 hours
-            if (state === "post" && event.date) {
-              const matchDate = new Date(event.date).getTime();
-              return now - matchDate < MAX_AGE_MS;
-            }
-            // Include upcoming matches (within next 2 hours)
-            if (state === "pre" && event.date) {
-              const matchDate = new Date(event.date).getTime();
-              return matchDate - now < 2 * 60 * 60 * 1000 && matchDate > now;
-            }
-            return false;
-          })
-          .map((event) => {
-            const comp = event.competitions?.[0];
-            const competitors = comp?.competitors || [];
-            const team1 = competitors[0];
-            const team2 = competitors[1];
-            const state = comp?.status?.type?.state;
-
-            return {
-              id: `cricket-${league.id}-${event.id}`,
-              league:
-                data.leagues?.[0]?.abbreviation ||
-                data.leagues?.[0]?.name ||
-                league.label,
-              homeTeam:
-                team1?.team?.abbreviation ||
-                team1?.team?.shortDisplayName ||
-                "TBD",
-              homeScore: team1?.score || "",
-              awayTeam:
-                team2?.team?.abbreviation ||
-                team2?.team?.shortDisplayName ||
-                "TBD",
-              awayScore: team2?.score || "",
-              status:
-                comp?.status?.type?.shortDetail ||
-                comp?.status?.type?.detail ||
-                "",
-              live: state === "in",
-            };
-          });
-      } catch {
-        return [];
-      }
-    });
-
-    const results = await Promise.allSettled(fetches);
-    const matches = results.flatMap((r) =>
-      r.status === "fulfilled" ? r.value : []
+    const res = await fetch(
+      "https://sportscore.com/api/widget/matches/?sport=cricket&limit=50",
+      { next: { revalidate: 60 } }
     );
+
+    if (!res.ok) {
+      return NextResponse.json({ matches: [] }, { status: 502 });
+    }
+
+    const data: SportScoreResponse = await res.json();
+    const events = data.matches || [];
+    const now = Date.now();
+
+    const matches = events
+      .filter((match) => {
+        // Only ICC international matches
+        if (!isInternationalMatch(match.competition)) return false;
+
+        // Include live matches
+        if (match.status === "live" || match.status === "inprogress") return true;
+        // Include finished matches from the past 7 days
+        if (match.status === "finished" && match.time) {
+          const matchDate = new Date(match.time).getTime();
+          return now - matchDate < MAX_AGE_MS;
+        }
+        // Include upcoming matches (within next 2 hours)
+        if (match.status === "upcoming" && match.time) {
+          const matchDate = new Date(match.time).getTime();
+          return matchDate - now < 2 * 60 * 60 * 1000 && matchDate > now;
+        }
+        return false;
+      })
+      .map((match) => {
+        const isLive = match.status === "live" || match.status === "inprogress";
+
+        return {
+          id: `cricket-${match.url}`,
+          league: match.competition || "Cricket",
+          homeTeam: match.home || "TBD",
+          homeScore: match.home_score || "",
+          awayTeam: match.away || "TBD",
+          awayScore: match.away_score || "",
+          status: match.status_text || match.status,
+          live: isLive,
+        };
+      });
 
     // Sort: live first, then by recency
     matches.sort((a, b) => {

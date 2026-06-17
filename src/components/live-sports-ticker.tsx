@@ -85,7 +85,19 @@ export function LiveSportsTicker() {
     init();
 
     const interval = setInterval(fetchAllLiveScores, REFRESH_INTERVAL);
-    return () => clearInterval(interval);
+
+    // Refresh immediately when user returns to tab
+    function handleVisibility() {
+      if (document.visibilityState === "visible") {
+        fetchAllLiveScores();
+      }
+    }
+    document.addEventListener("visibilitychange", handleVisibility);
+
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener("visibilitychange", handleVisibility);
+    };
   }, [fetchAllLiveScores]);
 
   if (!loading && matches.length === 0) return null;

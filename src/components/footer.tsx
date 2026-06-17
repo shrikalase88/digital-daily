@@ -48,10 +48,10 @@ export default function Footer() {
             <ul className="grid grid-cols-2 gap-1.5 text-sm text-white/40">
               {[
                 "NY Times", "BBC", "NPR", "CBC News",
-                "The Guardian", "ABC News",
-                "The Verge", "TechCrunch", "Ars Technica", "Wired",
-                "Bloomberg", "Yahoo Finance", "IMF", "Federal Reserve", "Economic Times",
-                "Yahoo Sports", "BBC Sport", "Sky Sports", "CBS Sports",
+                "The Guardian", "ABC News", "NDTV", "Times of India", "The Hindu",
+                "The Verge", "TechCrunch", "Ars Technica", "Wired", "India Today Tech",
+                "Bloomberg", "Yahoo Finance", "IMF", "Federal Reserve", "Economic Times", "Google News India", "LiveMint",
+                "Yahoo Sports", "BBC Sport", "Sky Sports", "CBS Sports", "Times of India Sports", "India Today Sports",
               ].map((s) => (
                 <li key={s}>{s}</li>
               ))}
@@ -88,6 +88,15 @@ export default function Footer() {
             </span>
             <span className="mx-2">·</span>
             <span>Weather via Open-Meteo</span>
+            <span className="mx-2">·</span>
+            <a
+              href="https://sportscore.com/"
+              rel="dofollow"
+              title="Sports data by SportScore"
+              className="text-white/30 transition-colors hover:text-white/50"
+            >
+              Cricket via SportScore
+            </a>
           </p>
         </div>
       </div>

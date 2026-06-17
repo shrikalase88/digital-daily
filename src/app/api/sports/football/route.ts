@@ -43,7 +43,7 @@ const SOCCER_LEAGUES = [
   { slug: "uefa.champions", label: "UCL" },
 ];
 
-const MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
+const MAX_AGE_MS = 24 * 60 * 60 * 1000; // 24 hours
 
 export async function GET() {
   try {

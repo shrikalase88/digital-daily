@@ -17,16 +17,15 @@ async function fetchWeather(
     const condition = getWeatherCondition(code);
     const icon = getWeatherIcon(code);
 
-    const timezone = data.timezone || "";
-    const tzParts = timezone.split("/");
-    let city = tzParts.length > 1 ? tzParts[1].replace(/_/g, " ") : "Unknown";
+    let city = "Unknown";
     let country = "";
 
+    // Primary: Use Nominatim reverse geocoding for accurate city name
     try {
       const geo = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&zoom=10`,
+        `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&zoom=10&addressdetails=1`,
         {
-          headers: { "User-Agent": "DigitalDaily/1.0" },
+          headers: { "User-Agent": "DigitalDaily/1.0 (contact@digitaldaily.com)" },
           next: { revalidate: 86400 },
         }
       );
@@ -39,10 +38,16 @@ async function fetchWeather(
           addr.village ||
           addr.municipality ||
           addr.county ||
-          city;
+          addr.state ||
+          "Unknown";
         country = addr.country || "";
       }
-    } catch {}
+    } catch {
+      // Fallback to timezone-based city name
+      const timezone = data.timezone || "";
+      const tzParts = timezone.split("/");
+      city = tzParts.length > 1 ? tzParts[1].replace(/_/g, " ") : "Unknown";
+    }
 
     return {
       temperature: Math.round(data.current?.temperature_2m ?? 0),

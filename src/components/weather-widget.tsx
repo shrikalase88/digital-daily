@@ -54,17 +54,35 @@ export default function WeatherWidget() {
           });
       },
       (geoError) => {
-        startTransition(() => {
-          if (geoError.code === geoError.PERMISSION_DENIED) {
-            setPermissionDenied(true);
-            setError("Location permission denied");
-          } else {
-            setError(geoError.message || "Location access failed");
-          }
-          setLoading(false);
-        });
+        // If geolocation fails, try IP-based fallback
+        fetch("/api/weather/fallback")
+          .then((res) => {
+            if (!res.ok) throw new Error("Fallback failed");
+            return res.json();
+          })
+          .then((data) => {
+            startTransition(() => {
+              setWeather(data);
+              setLoading(false);
+            });
+          })
+          .catch(() => {
+            startTransition(() => {
+              if (geoError.code === geoError.PERMISSION_DENIED) {
+                setPermissionDenied(true);
+                setError("Location permission denied");
+              } else {
+                setError(geoError.message || "Location access failed");
+              }
+              setLoading(false);
+            });
+          });
       },
-      { timeout: 8000 }
+      {
+        enableHighAccuracy: true,
+        timeout: 15000,
+        maximumAge: 300000, // Cache for 5 minutes
+      }
     );
   }, []);
 
