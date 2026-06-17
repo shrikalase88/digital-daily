@@ -84,7 +84,7 @@ export default function Footer() {
         <div className="mt-10 border-t border-white/[0.03] pt-6 text-center">
           <p className="text-[11px] text-white/20">
             <span className="tracking-wider">
-              Digital Daily &copy; {new Date().getFullYear()}
+              Digital Daily &copy; 2026
             </span>
             <span className="mx-2">·</span>
             <span>Weather via Open-Meteo</span>
