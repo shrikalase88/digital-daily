@@ -8,7 +8,7 @@ const cspHeader = `
   style-src 'self' 'unsafe-inline';
   img-src 'self' blob: data: https:;
   font-src 'self' data:;
-  connect-src 'self' ws: wss: https://api.open-meteo.com https://nominatim.openstreetmap.org https://sportscore.com https://ip-api.com https://news.google.com;
+  connect-src 'self' ws: wss: https://api.open-meteo.com https://nominatim.openstreetmap.org https://sportscore.com https://ip-api.com https://news.google.com https://vitals.vercel-insights.com;
   frame-src 'none';
   media-src 'self';
   object-src 'none';
@@ -53,7 +53,7 @@ const nextConfig: NextConfig = {
     minimumCacheTTL: 60 * 60 * 24 * 30, // 30 days
   },
   turbopack: {
-    root: __dirname,
+    root: process.cwd(),
   },
   // Enable compression
   compress: true,
