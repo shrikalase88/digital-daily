@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import { Bookmark } from "lucide-react";
@@ -8,6 +8,14 @@ import { CATEGORIES } from "@/lib/types";
 import type { Category } from "@/lib/types";
 import { getCategoryTheme } from "@/lib/themes";
 import { timeAgo } from "@/lib/utils";
+
+function useHydrated() {
+  return useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
+}
 
 export default function Navbar({
   activeCategory,
@@ -19,6 +27,7 @@ export default function Navbar({
   lastUpdated?: string | null;
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const mounted = useHydrated();
 
   const activePillClass = activeCategory
     ? `ios-pill ${getCategoryTheme(activeCategory).pillActive}`
@@ -67,19 +76,9 @@ export default function Navbar({
           <div className="flex items-center gap-2.5">
             {lastUpdated && (
               <span className="hidden text-[10px] text-white/25 sm:inline">
-                Updated {timeAgo(lastUpdated)}
+                Updated {mounted ? timeAgo(lastUpdated) : "just now"}
               </span>
             )}
-            <div className="hidden items-center gap-1.5 sm:flex">
-              <span className="relative flex h-1.5 w-1.5">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400/70" />
-                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-green-400" />
-              </span>
-              <span className="text-[10px] font-medium uppercase tracking-[0.12em] text-white/30">
-                Live
-              </span>
-            </div>
-
             <Link
               href="/bookmarks"
               className="ios-glass flex h-7 w-7 items-center justify-center rounded-full text-white/40 transition-colors hover:text-white/70"
@@ -112,7 +111,7 @@ export default function Navbar({
             exit={{ opacity: 0, y: -8 }}
             className="ios-glass mt-2 overflow-hidden rounded-2xl lg:hidden"
           >
-            <div className="space-y-0.5 px-4 py-3">
+            <div className="space-y-1 px-4 py-3">
               <button
                 onClick={() => { onCategoryChange?.(null); setMenuOpen(false); }}
                 className={`block w-full rounded-xl px-3 py-2.5 text-left text-sm ${

@@ -14,6 +14,13 @@ interface Match {
   live: boolean;
 }
 
+const SPORT_LABELS: Record<Match["sport"], string> = {
+  cricket: "CRICKET",
+  football: "FOOTBALL",
+  f1: "F1",
+  nba: "NBA",
+};
+
 const SPORT_DOT_COLORS: Record<Match["sport"], string> = {
   cricket: "bg-emerald-500",
   football: "bg-rose-500",
@@ -31,7 +38,6 @@ async function fetchSport(
     const res = await fetch(url, { cache: "no-store" });
     if (!res.ok) return [];
     const data = await res.json();
-    // Include all matches (live + recent results) — server already filters
     return (data.matches || []).map(
       (m: Record<string, string | boolean>) => ({
         id: `${sport}-${m.id}`,
@@ -67,7 +73,6 @@ export function LiveSportsTicker() {
       if (r.status === "fulfilled") allMatches.push(...r.value);
     }
 
-    // Sort: live matches first, then completed
     allMatches.sort((a, b) => {
       if (a.live && !b.live) return -1;
       if (!a.live && b.live) return 1;
@@ -86,7 +91,6 @@ export function LiveSportsTicker() {
 
     const interval = setInterval(fetchAllLiveScores, REFRESH_INTERVAL);
 
-    // Refresh immediately when user returns to tab
     function handleVisibility() {
       if (document.visibilityState === "visible") {
         fetchAllLiveScores();
@@ -103,22 +107,14 @@ export function LiveSportsTicker() {
   if (!loading && matches.length === 0) return null;
 
   return (
-    <div className="ios-glass w-full rounded-none border-x-0 border-t-0 border-b border-white/[0.04] py-2 shrink-0 overflow-hidden">
-      <div className="no-scrollbar mx-auto flex max-w-7xl items-center gap-3 overflow-x-auto px-4 sm:px-6 lg:px-8">
-        <span className="flex shrink-0 items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-white/30">
-          <span className="relative flex h-1.5 w-1.5">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400/70" />
-            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-green-400" />
-          </span>
-          Live
-        </span>
-
+    <div className="w-full py-3 px-4 sm:px-6 lg:px-8 shrink-0">
+      <div className="mx-auto flex max-w-7xl items-center gap-3 overflow-x-auto no-scrollbar scroll-smooth w-full">
         {loading && (
           <>
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="h-8 w-48 shrink-0 animate-pulse rounded-full bg-white/[0.04]"
+                className="flex-shrink-0 h-10 w-64 rounded-full bg-white/[0.06] border border-white/[0.06] animate-pulse"
               />
             ))}
           </>
@@ -128,40 +124,41 @@ export function LiveSportsTicker() {
           matches.map((match) => (
             <div
               key={match.id}
-              className="flex shrink-0 items-center gap-2 rounded-full ios-glass px-3 py-1.5"
+              className="flex items-center flex-shrink-0 gap-2.5 rounded-full border border-white/[0.08] bg-[#16121e]/80 px-4 py-2.5 min-w-max transition-all hover:border-white/[0.16]"
             >
-              {/* Sport indicator dot — pulses only for live matches */}
               <span
-                className={`h-1.5 w-1.5 rounded-full ${
+                className={`h-2 w-2 rounded-full shrink-0 ${
                   SPORT_DOT_COLORS[match.sport]
                 } ${match.live ? "animate-pulse" : "opacity-50"}`}
               />
-              <span className="text-[10px] font-medium text-white/25">
-                {match.league}
+
+              <span className="text-[10px] font-semibold tracking-widest text-white/30 uppercase shrink-0">
+                {SPORT_LABELS[match.sport]}
               </span>
-              <span className="text-xs font-bold text-slate-400">
+
+              <span className="text-xs font-bold text-white/80 shrink-0">
                 {match.homeTeam}
               </span>
-              <span className="font-mono text-xs font-bold text-white">
+              <span className="font-mono text-sm font-bold text-white tabular-nums shrink-0">
                 {match.homeScore}
               </span>
-              <span className="text-slate-600">vs</span>
-              <span className="font-mono text-xs font-bold text-white">
+              <span className="text-white/20 text-xs shrink-0">vs</span>
+              <span className="font-mono text-sm font-bold text-white tabular-nums shrink-0">
                 {match.awayScore}
               </span>
-              <span className="text-xs font-bold text-slate-400">
+              <span className="text-xs font-bold text-white/80 shrink-0">
                 {match.awayTeam}
               </span>
-              {/* Status badge — different style for live vs completed */}
-              <span
-                className={`rounded px-1.5 py-0.5 font-mono text-[10px] ${
+
+              <div
+                className={`shrink-0 rounded-md px-2 py-0.5 text-[11px] font-bold border ${
                   match.live
-                    ? "bg-pink-500/10 text-pink-400"
-                    : "bg-white/5 text-white/30"
+                    ? "bg-pink-500/20 border-pink-500/30 text-rose-400"
+                    : "bg-white/5 border-white/5 text-white/30"
                 }`}
               >
                 {match.status}
-              </span>
+              </div>
             </div>
           ))}
       </div>

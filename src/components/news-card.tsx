@@ -1,16 +1,24 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { Bookmark, BookmarkCheck, ArrowRight } from "lucide-react";
 import type { Article } from "@/lib/types";
 import { getCategoryTheme } from "@/lib/themes";
-import { timeAgo, useIsMounted, estimateReadTime } from "@/lib/utils";
+import { timeAgo, estimateReadTime } from "@/lib/utils";
 import { useBookmarks } from "@/hooks/use-bookmarks";
+
+function useHydrated() {
+  return useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
+}
 
 export default function NewsCard({ article }: { article: Article }) {
   const theme = getCategoryTheme(article.category);
-  const isMounted = useIsMounted();
+  const mounted = useHydrated();
   const { bookmarks, toggleBookmark } = useBookmarks();
   const isBookmarked = bookmarks.includes(article.id);
   const readTime = estimateReadTime(article.description || article.title);
@@ -56,13 +64,13 @@ export default function NewsCard({ article }: { article: Article }) {
           </div>
           
           <h3 className={`font-bold text-white leading-snug tracking-tight transition-colors duration-200 ${theme.textHover}
-            ${showImage ? 'text-[13px] line-clamp-2' : 'text-sm line-clamp-3'} hover:text-white/90`}
+            ${showImage ? 'text-xs sm:text-[13px] line-clamp-2' : 'text-sm sm:text-[15px] line-clamp-3'} hover:text-white/90`}
           >
             {article.title}
           </h3>
 
           {article.description && (
-            <p className={`text-white/40 leading-relaxed ${showImage ? 'text-[11px] line-clamp-1' : 'text-xs line-clamp-2'}`}>
+            <p className={`text-white/40 leading-relaxed ${showImage ? 'text-[11px] sm:text-xs line-clamp-1' : 'text-xs sm:text-[13px] line-clamp-2'}`}>
               {article.description}
             </p>
           )}
@@ -70,24 +78,24 @@ export default function NewsCard({ article }: { article: Article }) {
 
         <div className="flex items-center justify-between pt-3 mt-auto">
           <span className="text-[11px] text-white/25 truncate mr-2">
-            {article.source} · {isMounted ? timeAgo(article.publishedAt) : "just now"}
+            {article.source} · {mounted ? timeAgo(article.publishedAt) : "just now"}
           </span>
-          <div className="flex items-center gap-3 shrink-0 relative z-20">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0 relative z-20">
             <a
               href={article.url}
               target="_blank"
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
-              className={`inline-flex items-center gap-1 text-[11px] font-medium transition-all duration-200 ${theme.readMore}`}
+              className={`inline-flex items-center gap-1 text-[11px] sm:text-xs font-medium transition-all duration-200 py-1 ${theme.readMore}`}
             >
               Read more <ArrowRight size={10} className="transition-transform group-hover:translate-x-0.5" />
             </a>
             <button
               onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleBookmark(article.id); }}
-              className={`transition-opacity ${isBookmarked ? 'text-amber-400 opacity-100' : 'text-white/30 opacity-60 hover:opacity-100'}`}
+              className={`transition-opacity p-1 ${isBookmarked ? 'text-amber-400 opacity-100' : 'text-white/30 opacity-60 hover:opacity-100'}`}
               aria-label={isBookmarked ? "Remove bookmark" : "Bookmark article"}
             >
-              {isBookmarked ? <BookmarkCheck size={12} /> : <Bookmark size={12} />}
+              {isBookmarked ? <BookmarkCheck size={14} /> : <Bookmark size={14} />}
             </button>
           </div>
         </div>

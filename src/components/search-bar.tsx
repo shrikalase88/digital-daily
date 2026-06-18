@@ -72,7 +72,7 @@ export default function SearchBar({ onSearch, sources, activeSources, onSourceTo
         </button>
 
         {showSources && (
-          <div className="absolute right-0 top-full z-50 mt-2 w-64 max-h-72 overflow-y-auto ios-glass rounded-2xl p-2">
+          <div className="absolute right-0 top-full z-50 mt-2 w-64 max-w-[calc(100vw-2rem)] max-h-72 overflow-y-auto ios-glass rounded-2xl p-2">
             <div className="mb-2 flex items-center justify-between px-2 pb-1.5 border-b border-white/[0.04]">
               <span className="text-[10px] font-semibold uppercase tracking-wider text-white/30">Filter Sources</span>
               <button

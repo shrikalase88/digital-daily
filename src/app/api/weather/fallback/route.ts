@@ -12,7 +12,7 @@ async function fetchWeatherFromIP(): Promise<WeatherData | null> {
       "http://ip-api.com/json/?fields=status,lat,lon,city,country",
     ];
 
-    let geoData: any = null;
+    let geoData: { lat: number | null; lon: number | null; city: string | null; country: string | null } | null = null;
 
     for (const url of providers) {
       try {

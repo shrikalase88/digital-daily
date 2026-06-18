@@ -30,7 +30,7 @@ export default function HeroSection({
             rel="noopener noreferrer"
             className="block"
           >
-            {showImage ? (
+            {showImage && (
               <div className="relative aspect-[16/9] overflow-hidden sm:aspect-[21/9]">
                 <Image
                   src={main.imageUrl!}
@@ -41,44 +41,25 @@ export default function HeroSection({
                   className="object-cover transition-transform duration-700 group-hover:scale-105"
                   onError={() => setImgFailed(true)}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-              </div>
-            ) : (
-              <div className="flex aspect-[16/9] items-end bg-gradient-to-br from-white/[0.06] via-white/[0.02] to-transparent p-6 sm:aspect-[21/9]">
-                <div>
-                  <span className="mb-3 inline-block rounded-full border border-white/[0.08] bg-white/[0.06] px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-white/60">
-                    {main.category}
-                  </span>
-                  <h2 className="mb-2 text-xl font-bold leading-tight text-white sm:text-2xl lg:text-3xl">
-                    {main.title}
-                  </h2>
-                  {main.description && (
-                    <p className="line-clamp-2 text-sm text-white/50">
-                      {main.description}
-                    </p>
-                  )}
-                  <p className="mt-3 text-xs text-white/25">
-                    {main.source} · {isMounted ? timeAgo(main.publishedAt) : "just now"}
-                  </p>
-                </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
               </div>
             )}
-            <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-8">
-              <div className="mb-3 flex items-center gap-2">
-                <span className="rounded-full ios-glass px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-white/80">
+            <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-8" style={{ background: showImage ? undefined : "linear-gradient(135deg, rgba(18,18,24,0.6), rgba(18,18,24,0.4))" }}>
+              <div className="mb-2 flex items-center gap-2">
+                <span className="rounded-full ios-glass px-2.5 py-0.5 text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-white/80">
                   {main.category}
                 </span>
-                <span className="text-xs text-white/40">{main.source}</span>
+                <span className="text-[10px] sm:text-xs text-white/40">{main.source}</span>
               </div>
-              <h2 className="mb-2 text-xl font-bold leading-tight text-white sm:text-2xl lg:text-3xl">
+              <h2 className="mb-1 text-base sm:text-xl font-bold leading-tight text-white sm:text-2xl lg:text-3xl line-clamp-2">
                 {main.title}
               </h2>
               {main.description && (
-                <p className="line-clamp-2 text-sm text-white/60">
+                <p className="hidden sm:block line-clamp-1 text-xs sm:text-sm text-white/60">
                   {main.description}
                 </p>
               )}
-              <p className="mt-3 text-xs text-white/30">
+              <p className="mt-1 text-[10px] sm:text-xs text-white/30">
                 {isMounted ? timeAgo(main.publishedAt) : "just now"}
               </p>
             </div>

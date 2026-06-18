@@ -20,7 +20,6 @@ export const cacheStore = new Map<string, { data: unknown; timestamp: number; hi
 
 // Global types for Node.js process and intervals
 declare global {
-  // eslint-disable-next-line no-var
   var cacheCleanupInterval: NodeJS.Timeout | undefined;
 }
 

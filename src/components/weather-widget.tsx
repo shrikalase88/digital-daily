@@ -14,6 +14,26 @@ export default function WeatherWidget() {
   const [isHovered, setIsHovered] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
+  const fetchFallback = useCallback(() => {
+    fetch("/api/weather/fallback")
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch weather");
+        return res.json();
+      })
+      .then((data) => {
+        startTransition(() => {
+          setWeather(data);
+          setLoading(false);
+        });
+      })
+      .catch(() => {
+        startTransition(() => {
+          setError("Could not load weather");
+          setLoading(false);
+        });
+      });
+  }, []);
+
   const fetchWeather = useCallback(() => {
     startTransition(() => {
       setLoading(true);
@@ -48,31 +68,11 @@ export default function WeatherWidget() {
       },
       { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 }
     );
-  }, []);
-
-  const fetchFallback = useCallback(() => {
-    fetch("/api/weather/fallback")
-      .then((res) => {
-        if (!res.ok) throw new Error("Failed to fetch weather");
-        return res.json();
-      })
-      .then((data) => {
-        startTransition(() => {
-          setWeather(data);
-          setLoading(false);
-        });
-      })
-      .catch(() => {
-        startTransition(() => {
-          setError("Could not load weather");
-          setLoading(false);
-        });
-      });
-  }, []);
+  }, [fetchFallback]);
 
   useEffect(() => {
     fetchWeather();
-    const interval = setInterval(fetchWeather, 60000); // Refresh every 60 seconds
+    const interval = setInterval(fetchWeather, 60000);
     return () => clearInterval(interval);
   }, [fetchWeather]);
 
