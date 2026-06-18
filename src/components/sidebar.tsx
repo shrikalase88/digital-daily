@@ -3,6 +3,7 @@
 import type { Article } from "@/lib/types";
 import { timeAgo, useIsMounted } from "@/lib/utils";
 import WeatherWidget from "./weather-widget";
+import StockWidget from "./stock-widget";
 
 export default function Sidebar({
   latestNews,
@@ -15,6 +16,9 @@ export default function Sidebar({
     <aside className="space-y-6">
       {/* Reusable Weather Widget */}
       <WeatherWidget />
+
+      {/* Stock Market Widget */}
+      <StockWidget />
 
       {/* Latest News Section */}
       <div className="ios-glass rounded-3xl p-5">

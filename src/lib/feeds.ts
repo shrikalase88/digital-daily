@@ -5,44 +5,63 @@ interface FeedConfig {
   url: string;
   source: string;
   category: Category;
+  timeout?: number;
+  retries?: number;
 }
 
+// Optimized feed configuration with timeouts and retry logic
 const FEEDS: FeedConfig[] = [
-  // Politics & World
-  { url: "https://rss.nytimes.com/services/xml/rss/nyt/Politics.xml", source: "NY Times", category: "Politics & World" },
-  { url: "http://feeds.bbci.co.uk/news/world/rss.xml", source: "BBC", category: "Politics & World" },
-  { url: "https://feeds.npr.org/1001/rss.xml", source: "NPR", category: "Politics & World" },
-  { url: "https://www.cbc.ca/webfeed/rss/rss-politics", source: "CBC News", category: "Politics & World" },
-  { url: "https://www.theguardian.com/world/rss", source: "The Guardian", category: "Politics & World" },
-  { url: "https://abcnews.go.com/abcnews/politicsheadlines", source: "ABC News", category: "Politics & World" },
-  { url: "https://feeds.feedburner.com/NDTV-LatestNews", source: "NDTV", category: "Politics & World" },
-  { url: "https://timesofindia.indiatimes.com/rssfeeds/296589292.cms", source: "Times of India", category: "Politics & World" },
-  { url: "https://www.thehindu.com/news/feeder/default.rss", source: "The Hindu", category: "Politics & World" },
+// Politics & World
+  { url: "https://rss.nytimes.com/services/xml/rss/nyt/Politics.xml", source: "NY Times", category: "Politics & World", timeout: 5000, retries: 2 },
+  { url: "http://feeds.bbci.co.uk/news/world/rss.xml", source: "BBC", category: "Politics & World", timeout: 5000, retries: 2 },
+  { url: "https://feeds.npr.org/1001/rss.xml", source: "NPR", category: "Politics & World", timeout: 5000, retries: 2 },
+  { url: "https://www.theguardian.com/world/rss", source: "The Guardian", category: "Politics & World", timeout: 5000, retries: 2 },
+  { url: "https://abcnews.go.com/abcnews/politicsheadlines", source: "ABC News", category: "Politics & World", timeout: 5000, retries: 2 },
+  { url: "https://feeds.feedburner.com/NDTV-LatestNews", source: "NDTV", category: "Politics & World", timeout: 5000, retries: 2 },
+  { url: "https://timesofindia.indiatimes.com/rssfeeds/296589292.cms", source: "Times of India", category: "Politics & World", timeout: 5000, retries: 2 },
+  { url: "https://www.thehindu.com/news/feeder/default.rss", source: "The Hindu", category: "Politics & World", timeout: 5000, retries: 2 },
 
   // Technology
-  { url: "https://www.theverge.com/rss/index.xml", source: "The Verge", category: "Technology" },
-  { url: "https://techcrunch.com/feed/", source: "TechCrunch", category: "Technology" },
-  { url: "https://feeds.arstechnica.com/arstechnica/index", source: "Ars Technica", category: "Technology" },
-  { url: "https://www.wired.com/feed/rss", source: "Wired", category: "Technology" },
-  { url: "https://timesofindia.indiatimes.com/rssfeeds/1898192.cms", source: "Times of India Tech", category: "Technology" },
-  { url: "https://news.google.com/rss/search?q=india+technology+gadgets+smartphones&hl=en-IN&gl=IN&ceid=IN:en", source: "Google News India Tech", category: "Technology" },
+  { url: "https://www.theverge.com/rss/index.xml", source: "The Verge", category: "Technology", timeout: 5000, retries: 2 },
+  { url: "https://techcrunch.com/feed/", source: "TechCrunch", category: "Technology", timeout: 5000, retries: 2 },
+  { url: "https://feeds.arstechnica.com/arstechnica/index", source: "Ars Technica", category: "Technology", timeout: 5000, retries: 2 },
+  { url: "https://www.wired.com/feed/rss", source: "Wired", category: "Technology", timeout: 5000, retries: 2 },
+  { url: "https://timesofindia.indiatimes.com/rssfeeds/1898192.cms", source: "Times of India Tech", category: "Technology", timeout: 5000, retries: 2 },
+  { url: "https://news.google.com/rss/search?q=india+technology+gadgets+smartphones&hl=en-IN&gl=IN&ceid=IN:en", source: "Google News India Tech", category: "Technology", timeout: 8000, retries: 1 },
 
   // Finance & Corporate
-  { url: "https://seekingalpha.com/feed.xml", source: "Seeking Alpha", category: "Finance & Corporate" },
-  { url: "https://www.investing.com/rss/news_1.rss", source: "Investing.com", category: "Finance & Corporate" },
-  { url: "https://www.federalreserve.gov/feeds/press_all.xml", source: "Federal Reserve", category: "Finance & Corporate" },
-  { url: "https://economictimes.indiatimes.com/markets/rssfeeds/2146842.cms", source: "Economic Times", category: "Finance & Corporate" },
-  { url: "https://news.google.com/rss/search?q=india+business+economy&hl=en-IN&gl=IN&ceid=IN:en", source: "Google News India", category: "Finance & Corporate" },
-  { url: "https://www.livemint.com/rss/markets", source: "LiveMint", category: "Finance & Corporate" },
+  { url: "https://seekingalpha.com/feed.xml", source: "Seeking Alpha", category: "Finance & Corporate", timeout: 5000, retries: 2 },
+  { url: "https://www.federalreserve.gov/feeds/press_all.xml", source: "Federal Reserve", category: "Finance & Corporate", timeout: 5000, retries: 2 },
+  { url: "https://economictimes.indiatimes.com/markets/rssfeeds/2146842.cms", source: "Economic Times", category: "Finance & Corporate", timeout: 5000, retries: 2 },
+  { url: "https://news.google.com/rss/search?q=india+business+economy&hl=en-IN&gl=IN&ceid=IN:en", source: "Google News India", category: "Finance & Corporate", timeout: 8000, retries: 1 },
+  { url: "https://www.livemint.com/rss/markets", source: "LiveMint", category: "Finance & Corporate", timeout: 5000, retries: 2 },
 
   // Sports
-  { url: "https://sports.yahoo.com/rss/", source: "Yahoo Sports", category: "Sports" },
-  { url: "https://feeds.bbci.co.uk/sport/rss.xml", source: "BBC Sport", category: "Sports" },
-  { url: "https://www.skysports.com/rss/12040", source: "Sky Sports", category: "Sports" },
-  { url: "https://www.cbssports.com/rss/headlines/", source: "CBS Sports", category: "Sports" },
-  { url: "https://timesofindia.indiatimes.com/rssfeeds/4719148.cms", source: "Times of India Sports", category: "Sports" },
-  { url: "https://www.indiatoday.in/rss/1206605", source: "India Today Sports", category: "Sports" },
+  { url: "https://sports.yahoo.com/rss/", source: "Yahoo Sports", category: "Sports", timeout: 5000, retries: 2 },
+  { url: "https://feeds.bbci.co.uk/sport/rss.xml", source: "BBC Sport", category: "Sports", timeout: 5000, retries: 2 },
+  { url: "https://www.skysports.com/rss/12040", source: "Sky Sports", category: "Sports", timeout: 5000, retries: 2 },
+  { url: "https://www.cbssports.com/rss/headlines/", source: "CBS Sports", category: "Sports", timeout: 5000, retries: 2 },
+  { url: "https://timesofindia.indiatimes.com/rssfeeds/4719148.cms", source: "Times of India Sports", category: "Sports", timeout: 5000, retries: 2 },
+  { url: "https://www.indiatoday.in/rss/1206605", source: "India Today Sports", category: "Sports", timeout: 5000, retries: 2 },
 ];
+
+// Reusable parser instance (connection pooling)
+const parserCache = new Map<string, Parser>();
+
+function getParser(timeout: number): Parser {
+  const cacheKey = `parser-${timeout}`;
+  if (!parserCache.has(cacheKey)) {
+    parserCache.set(cacheKey, new Parser({
+      timeout,
+      headers: {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Accept": "application/rss+xml, application/xml, text/xml",
+        "Cache-Control": "no-cache",
+      },
+    }));
+  }
+  return parserCache.get(cacheKey)!;
+}
 
 function slugify(text: string): string {
   return text
@@ -182,16 +201,12 @@ function extractUniversalImage(item: Parser.Item & Record<string, unknown>): str
   return null;
 }
 
-async function fetchFeed(config: FeedConfig): Promise<Article[]> {
-  try {
-    const parser = new Parser({
-      timeout: 8000,
-      headers: {
-        "User-Agent":
-          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-      },
-    });
+async function fetchFeedWithRetry(config: FeedConfig, attempt = 1): Promise<Article[]> {
+  const timeout = config.timeout || 8000;
+  const maxRetries = config.retries ?? 2;
 
+  try {
+    const parser = getParser(timeout);
     const feed = await parser.parseURL(config.url);
     const publisher = detectPublisher(feed.title || "", config.source);
 
@@ -211,9 +226,22 @@ async function fetchFeed(config: FeedConfig): Promise<Article[]> {
       };
     });
   } catch (err) {
-    console.error(`RSS failed [${config.source}]:`, (err as Error).message);
+    const error = err as Error & { code?: string };
+    
+    // Retry on network errors or timeouts
+    if (attempt < maxRetries && (error.code === "ETIMEDOUT" || error.code === "ECONNRESET" || error.message.includes("timeout"))) {
+      console.log(`Retrying ${config.source} (attempt ${attempt + 1}/${maxRetries})`);
+      await new Promise(resolve => setTimeout(resolve, 500 * attempt)); // Exponential backoff
+      return fetchFeedWithRetry(config, attempt + 1);
+    }
+    
+    console.error(`RSS failed [${config.source}]:`, error.message);
     return [];
   }
+}
+
+async function fetchFeed(config: FeedConfig): Promise<Article[]> {
+  return fetchFeedWithRetry(config);
 }
 
 export async function aggregateNews(): Promise<Article[]> {

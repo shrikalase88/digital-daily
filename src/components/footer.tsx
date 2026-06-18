@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { CATEGORIES } from "@/lib/types";
 
 export default function Footer() {
@@ -30,12 +31,12 @@ export default function Footer() {
             <ul className="space-y-2">
               {CATEGORIES.map((cat) => (
                 <li key={cat}>
-                  <a
+                  <Link
                     href={`/?category=${encodeURIComponent(cat)}`}
                     className="text-sm text-white/40 transition-colors hover:text-white/70"
                   >
                     {cat}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -69,12 +70,12 @@ export default function Footer() {
                 { label: "Contact", href: "/contact" },
               ].map((item) => (
                 <li key={item.label}>
-                  <a
+                  <Link
                     href={item.href}
                     className="text-white/40 transition-colors hover:text-white/70"
                   >
                     {item.label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>

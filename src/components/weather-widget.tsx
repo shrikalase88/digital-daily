@@ -20,6 +20,37 @@ export default function WeatherWidget() {
       setError(null);
     });
 
+    if (!navigator.geolocation) {
+      fetchFallback();
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        fetch(`/api/weather?lat=${latitude}&lon=${longitude}`)
+          .then((res) => {
+            if (!res.ok) throw new Error("Failed to fetch weather");
+            return res.json();
+          })
+          .then((data) => {
+            startTransition(() => {
+              setWeather(data);
+              setLoading(false);
+            });
+          })
+          .catch(() => {
+            fetchFallback();
+          });
+      },
+      () => {
+        fetchFallback();
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 }
+    );
+  }, []);
+
+  const fetchFallback = useCallback(() => {
     fetch("/api/weather/fallback")
       .then((res) => {
         if (!res.ok) throw new Error("Failed to fetch weather");
@@ -41,6 +72,8 @@ export default function WeatherWidget() {
 
   useEffect(() => {
     fetchWeather();
+    const interval = setInterval(fetchWeather, 60000); // Refresh every 60 seconds
+    return () => clearInterval(interval);
   }, [fetchWeather]);
 
   const handleMouseMove = useCallback(

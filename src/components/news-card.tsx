@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { Bookmark, BookmarkCheck } from "lucide-react";
+import { Bookmark, BookmarkCheck, ArrowRight } from "lucide-react";
 import type { Article } from "@/lib/types";
 import { getCategoryTheme } from "@/lib/themes";
 import { timeAgo, useIsMounted, estimateReadTime } from "@/lib/utils";
@@ -18,10 +18,17 @@ export default function NewsCard({ article }: { article: Article }) {
   const showImage = article.imageUrl && !imgFailed;
 
   return (
-    <article className={`group flex flex-col w-full ios-glass-elevated rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-xl ${theme.borderHover}`}>
-      
-      {showImage ? (
-        <div className="relative w-full bg-slate-950/60 overflow-hidden shrink-0">
+    <article className={`news-card group relative flex flex-col w-full ios-glass-elevated rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-xl ${theme.borderHover}`}>
+      <a
+        href={article.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="absolute inset-0 z-0"
+        aria-label={article.title}
+      />
+
+      {showImage && (
+        <div className="relative w-full bg-slate-950/60 overflow-hidden shrink-0 z-10">
           <div className="relative aspect-[16/9] w-full">
             <Image
               src={article.imageUrl!}
@@ -33,10 +40,11 @@ export default function NewsCard({ article }: { article: Article }) {
               onError={() => setImgFailed(true)}
             />
           </div>
+          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors pointer-events-none" />
         </div>
-      ) : null}
+      )}
 
-      <div className="p-4 sm:p-5 flex flex-col flex-1 min-w-0">
+      <div className="relative p-4 sm:p-5 flex flex-col flex-1 min-w-0 z-10">
         
         <div className="space-y-2 min-w-0 flex-1">
           <div className="flex items-center gap-2">
@@ -48,7 +56,7 @@ export default function NewsCard({ article }: { article: Article }) {
           </div>
           
           <h3 className={`font-bold text-white leading-snug tracking-tight transition-colors duration-200 ${theme.textHover}
-            ${showImage ? 'text-[13px] line-clamp-2' : 'text-sm line-clamp-3'}`}
+            ${showImage ? 'text-[13px] line-clamp-2' : 'text-sm line-clamp-3'} hover:text-white/90`}
           >
             {article.title}
           </h3>
@@ -64,22 +72,23 @@ export default function NewsCard({ article }: { article: Article }) {
           <span className="text-[11px] text-white/25 truncate mr-2">
             {article.source} · {isMounted ? timeAgo(article.publishedAt) : "just now"}
           </span>
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-3 shrink-0 relative z-20">
+            <a
+              href={article.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className={`inline-flex items-center gap-1 text-[11px] font-medium transition-all duration-200 ${theme.readMore}`}
+            >
+              Read more <ArrowRight size={10} className="transition-transform group-hover:translate-x-0.5" />
+            </a>
             <button
-              onClick={(e) => { e.preventDefault(); toggleBookmark(article.id); }}
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleBookmark(article.id); }}
               className={`transition-opacity ${isBookmarked ? 'text-amber-400 opacity-100' : 'text-white/30 opacity-60 hover:opacity-100'}`}
               aria-label={isBookmarked ? "Remove bookmark" : "Bookmark article"}
             >
               {isBookmarked ? <BookmarkCheck size={12} /> : <Bookmark size={12} />}
             </button>
-            <a 
-              href={article.url} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className={`text-[11px] font-semibold opacity-70 hover:opacity-100 hover:underline transition-opacity ${theme.textHover}`}
-            >
-              Read more
-            </a>
           </div>
         </div>
 

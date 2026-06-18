@@ -3,31 +3,44 @@ import type { WeatherData } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
-/**
- * Fallback weather endpoint using IP-based geolocation.
- * Used when browser geolocation fails or is denied.
- */
-
-interface IpGeoResponse {
-  lat: number;
-  lon: number;
-  city: string;
-  country: string;
-  status: string;
-}
-
 async function fetchWeatherFromIP(): Promise<WeatherData | null> {
   try {
-    // Get location from IP address
-    const geoRes = await fetch("http://ip-api.com/json/?fields=status,lat,lon,city,country", {
-      next: { revalidate: 3600 }, // Cache for 1 hour
-    });
+    // Try multiple IP geolocation services in order of preference
+    const providers = [
+      "https://ipapi.co/json/",
+      "https://ipapi.com/ip_api.php",
+      "http://ip-api.com/json/?fields=status,lat,lon,city,country",
+    ];
 
-    if (!geoRes.ok) return null;
-    const geoData: IpGeoResponse = await geoRes.json();
+    let geoData: any = null;
 
-    if (geoData.status !== "success" || !geoData.lat || !geoData.lon) {
-      return null;
+    for (const url of providers) {
+      try {
+        const geoRes = await fetch(url, {
+          next: { revalidate: 3600 },
+        });
+
+        if (!geoRes.ok) continue;
+
+        const data = await geoRes.json();
+
+        // Normalize response format
+        geoData = {
+          lat: data.lat || data.latitude,
+          lon: data.lon || data.longitude,
+          city: data.city,
+          country: data.country || data.country_name,
+        };
+
+        if (geoData.lat && geoData.lon) break;
+      } catch {
+        continue;
+      }
+    }
+
+    if (!geoData || !geoData.lat || !geoData.lon) {
+      // Default to a major city if all providers fail
+      geoData = { lat: 40.7128, lon: -74.0060, city: "New York", country: "US" };
     }
 
     // Fetch weather using the IP-based coordinates
