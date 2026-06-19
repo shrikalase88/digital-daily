@@ -5,7 +5,7 @@ import type { Article, Category } from "@/lib/types";
 // Rate limiting configuration
 const RATE_LIMIT = {
   windowMs: 60 * 1000, // 1 minute window
-  maxRequests: 10, // 10 requests per minute per IP
+  maxRequests: 100, // Increased to 100 requests per minute per IP
 };
 
 // In-memory stores (use Redis in production)

@@ -3,7 +3,7 @@ import { NextRequest } from "next/server";
 // Rate limiting configuration
 export const RATE_LIMIT = {
   windowMs: 60 * 1000, // 1 minute window
-  maxRequests: 10, // 10 requests per minute per IP
+  maxRequests: 100, // Increased to 100 requests per minute per IP for local testing
 };
 
 // Cache TTL configuration (in milliseconds)
