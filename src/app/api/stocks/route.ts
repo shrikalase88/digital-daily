@@ -174,6 +174,26 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // Determine market status for the frontend
+    const dayOfWeek = new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata", weekday: "short" });
+    const isWeekend = dayOfWeek === "Sat" || dayOfWeek === "Sun";
+    let marketStatus: "open" | "closed" | "pre-market" | "post-market";
+    let marketStatusLabel: string;
+
+    if (isWeekend) {
+      marketStatus = "closed";
+      marketStatusLabel = "Weekend · Market Closed";
+    } else if (currentTime >= marketOpen && currentTime <= marketClose) {
+      marketStatus = "open";
+      marketStatusLabel = "Market Open";
+    } else if (currentTime < marketOpen && currentTime >= marketOpen - 60) {
+      marketStatus = "pre-market";
+      marketStatusLabel = "Pre-Market";
+    } else {
+      marketStatus = "closed";
+      marketStatusLabel = "Market Closed";
+    }
+
     const data = {
       bse: bseData || {
         symbol: "BSE Sensex",
@@ -189,6 +209,8 @@ export async function GET(request: NextRequest) {
         changePercent: 0,
         lastUpdated: new Date().toISOString(),
       },
+      marketStatus,
+      marketStatusLabel,
     };
 
     // Update cache

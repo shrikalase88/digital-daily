@@ -107,60 +107,68 @@ export function LiveSportsTicker() {
   if (!loading && matches.length === 0) return null;
 
   return (
-    <div className="w-full py-3 px-4 sm:px-6 lg:px-8 shrink-0">
-      <div className="mx-auto flex max-w-7xl items-center gap-3 overflow-x-auto no-scrollbar scroll-smooth w-full">
-        {loading && (
-          <>
-            {[1, 2, 3].map((i) => (
+    <div className="mx-auto max-w-7xl px-4 py-2.5 sm:px-6 lg:px-8">
+      <div
+        className="relative overflow-hidden"
+        style={{
+          maskImage: "linear-gradient(to right, transparent, black 24px, black calc(100% - 24px), transparent)",
+          WebkitMaskImage: "linear-gradient(to right, transparent, black 24px, black calc(100% - 24px), transparent)",
+        }}
+      >
+        <div className="flex items-center gap-2.5 overflow-x-auto no-scrollbar scroll-smooth">
+          {loading && (
+            <>
+              {[1, 2, 3].map((i) => (
+                <div
+                  key={i}
+                  className="h-9 w-56 flex-shrink-0 rounded-full border border-white/[0.06] bg-white/[0.06] animate-pulse"
+                />
+              ))}
+            </>
+          )}
+
+          {!loading &&
+            matches.map((match) => (
               <div
-                key={i}
-                className="flex-shrink-0 h-10 w-64 rounded-full bg-white/[0.06] border border-white/[0.06] animate-pulse"
-              />
-            ))}
-          </>
-        )}
-
-        {!loading &&
-          matches.map((match) => (
-            <div
-              key={match.id}
-              className="flex items-center flex-shrink-0 gap-2.5 rounded-full border border-white/[0.08] bg-[#16121e]/80 px-4 py-2.5 min-w-max transition-all hover:border-white/[0.16]"
-            >
-              <span
-                className={`h-2 w-2 rounded-full shrink-0 ${
-                  SPORT_DOT_COLORS[match.sport]
-                } ${match.live ? "animate-pulse" : "opacity-50"}`}
-              />
-
-              <span className="text-[10px] font-semibold tracking-widest text-white/30 uppercase shrink-0">
-                {SPORT_LABELS[match.sport]}
-              </span>
-
-              <span className="text-xs font-bold text-white/80 shrink-0">
-                {match.homeTeam}
-              </span>
-              <span className="font-mono text-sm font-bold text-white tabular-nums shrink-0">
-                {match.homeScore}
-              </span>
-              <span className="text-white/20 text-xs shrink-0">vs</span>
-              <span className="font-mono text-sm font-bold text-white tabular-nums shrink-0">
-                {match.awayScore}
-              </span>
-              <span className="text-xs font-bold text-white/80 shrink-0">
-                {match.awayTeam}
-              </span>
-
-              <div
-                className={`shrink-0 rounded-md px-2 py-0.5 text-[11px] font-bold border ${
-                  match.live
-                    ? "bg-pink-500/20 border-pink-500/30 text-rose-400"
-                    : "bg-white/5 border-white/5 text-white/30"
-                }`}
+                key={match.id}
+                className="flex flex-shrink-0 items-center gap-2 rounded-full border border-white/[0.08] bg-[#16121e]/80 px-3 py-1.5 transition-all hover:border-white/[0.16]"
               >
-                {match.status}
+                <span
+                  className={`h-1.5 w-1.5 rounded-full shrink-0 ${
+                    SPORT_DOT_COLORS[match.sport]
+                  } ${match.live ? "animate-pulse" : "opacity-50"}`}
+                />
+
+                <span className="text-[9px] font-semibold tracking-widest text-white/30 uppercase shrink-0">
+                  {SPORT_LABELS[match.sport]}
+                </span>
+
+                <span className="text-[11px] font-bold text-white/80 shrink-0">
+                  {match.homeTeam}
+                </span>
+                <span className="font-mono text-xs font-bold text-white tabular-nums shrink-0">
+                  {match.homeScore}
+                </span>
+                <span className="text-white/20 text-[10px] shrink-0">vs</span>
+                <span className="font-mono text-xs font-bold text-white tabular-nums shrink-0">
+                  {match.awayScore}
+                </span>
+                <span className="text-[11px] font-bold text-white/80 shrink-0">
+                  {match.awayTeam}
+                </span>
+
+                <div
+                  className={`shrink-0 rounded-md px-1.5 py-0.5 text-[10px] font-bold border ${
+                    match.live
+                      ? "bg-pink-500/20 border-pink-500/30 text-rose-400"
+                      : "bg-white/5 border-white/5 text-white/30"
+                  }`}
+                >
+                  {match.status}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+        </div>
       </div>
     </div>
   );
