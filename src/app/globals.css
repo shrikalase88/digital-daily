@@ -249,45 +249,32 @@ body {
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-/* ── Responsive News Grid Layout ── */
+/* ── Responsive News Grid Layout (Balanced 2-Column Bento Structure) ── */
 .news-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
   width: 100%;
 }
 
-.news-card:first-child {
-  grid-column: span 2;
-}
-
 .news-card {
-  min-height: 170px;
+  min-height: 100%;
   display: flex;
   flex-direction: column;
 }
 
-/* Compact view mode */
+/* Compact magazine list mode */
 .news-compact-grid {
   display: grid;
   grid-template-columns: 1fr;
   gap: 10px;
 }
 
-/* Visual magazine mode */
+/* Visual card mode */
 .news-visual-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 20px;
-}
-
-@media (max-width: 1024px) {
-  .news-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .news-visual-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
 }
 
 @media (max-width: 640px) {
@@ -295,12 +282,9 @@ body {
     grid-template-columns: 1fr;
     gap: 12px;
   }
-  .news-card:first-child {
-    grid-column: span 1;
-  }
   .news-visual-grid {
     grid-template-columns: 1fr;
-    gap: 14px;
+    gap: 12px;
   }
 }
 

@@ -23,8 +23,8 @@ export default function CategorySection({
 }) {
   if (articles.length === 0) return null;
 
-  const main = articles[0];
-  const rest = articles.slice(1, 4);
+  // Take an even count (4 articles) to perfectly fill a 2x2 grid without empty spaces
+  const displayArticles = articles.slice(0, 4);
   const theme = getCategoryTheme(category);
   const Icon = theme.icon;
 
@@ -56,8 +56,7 @@ export default function CategorySection({
       </div>
 
       <div className={gridClass}>
-        <NewsCard key={main.id} article={main} viewMode={viewMode} />
-        {rest.map((article, i) => (
+        {displayArticles.map((article, i) => (
           <NewsCard key={article.id + i} article={article} viewMode={viewMode} />
         ))}
       </div>
