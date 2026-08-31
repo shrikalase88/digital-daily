@@ -12,9 +12,10 @@ export default function CategoryPillList({
   onCategoryChange,
 }: CategoryPillListProps) {
   return (
-    <>{
-      CATEGORIES.map((cat) => {
+    <>
+      {CATEGORIES.map((cat) => {
         const theme = getCategoryTheme(cat);
+        const Icon = theme.icon;
         const isActive = activeCategory === cat;
         return (
           <button
@@ -22,14 +23,15 @@ export default function CategoryPillList({
             role="tab"
             aria-selected={isActive}
             onClick={() => onCategoryChange?.(cat)}
-            className={`ios-pill text-xs ${
+            className={`ios-pill text-xs inline-flex items-center gap-1.5 ${
               isActive ? theme.pillActive : "ios-pill-inactive"
             } focus-visible:ring-2 focus-visible:ring-white`}
           >
-            {cat}
+            <Icon size={13} className={isActive ? "text-current" : "text-white/40"} />
+            <span>{cat}</span>
           </button>
         );
-      })
-    }</>
+      })}
+    </>
   );
 }

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useTransition } from "react";
 import Link from "next/link";
+import { Bookmark, Sparkles, ArrowLeft } from "lucide-react";
 import NewsCard from "@/components/news-card";
 import type { Article } from "@/lib/types";
 
@@ -47,41 +48,54 @@ export default function BookmarksPage() {
   }, [bookmarkIds, startTransition]);
 
   return (
-    <div className="relative min-h-screen">
-      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-        <div className="mb-6 flex items-center gap-4">
-          <Link
-            href="/"
-            className="ios-pill ios-pill-inactive text-xs hover:bg-white/[0.04] hover:text-white/80"
-          >
-            ← Back
-          </Link>
-          <h1 className="text-lg font-bold text-white/90">Bookmarks</h1>
-          <span className="text-xs text-white/30">{bookmarkIds.length} saved</span>
+    <div className="relative min-h-screen pb-mobile-dock">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <div className="mb-8 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Link
+              href="/"
+              className="flex h-9 w-9 items-center justify-center rounded-full ios-glass text-white/70 hover:text-white transition-colors"
+              aria-label="Back to home"
+            >
+              <ArrowLeft size={16} />
+            </Link>
+            <div>
+              <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight flex items-center gap-2">
+                <Bookmark size={20} className="text-amber-400" />
+                Saved Bookmarks
+              </h1>
+              <p className="text-xs text-white/40">
+                {bookmarkIds.length} {bookmarkIds.length === 1 ? "story" : "stories"} saved for offline reading
+              </p>
+            </div>
+          </div>
         </div>
 
         {loading && (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {[...Array(4)].map((_, i) => (
-              <div key={i} className="ios-glass h-52 animate-pulse rounded-3xl" />
+              <div key={i} className="ios-glass-elevated h-64 animate-pulse rounded-3xl" />
             ))}
           </div>
         )}
 
         {!loading && bookmarkIds.length === 0 && (
-          <div className="ios-glass rounded-3xl p-12 text-center">
-            <p className="text-sm text-white/30">No bookmarks yet. Save articles to read later.</p>
-            <Link href="/" className="mt-4 inline-block ios-pill ios-pill-inactive text-xs">
-              Browse news
+          <div className="ios-glass-elevated rounded-3xl p-16 text-center border border-white/10 max-w-md mx-auto my-12">
+            <Bookmark size={36} className="mx-auto mb-3 text-amber-400/40" />
+            <h3 className="text-base font-bold text-white mb-1">No bookmarks yet</h3>
+            <p className="text-xs text-white/40 mb-5">Tap the bookmark icon on any story to save it here for quick access.</p>
+            <Link href="/" className="inline-flex items-center gap-2 ios-pill ios-pill-active text-xs font-semibold px-5 py-2">
+              Browse Live Feed
             </Link>
           </div>
         )}
 
         {!loading && bookmarkIds.length > 0 && articles.length === 0 && (
-          <div className="ios-glass rounded-3xl p-12 text-center">
-            <p className="text-sm text-white/30">Some bookmarked articles may no longer be available.</p>
+          <div className="ios-glass rounded-3xl p-12 text-center border border-white/10 max-w-md mx-auto my-12">
+            <Sparkles size={32} className="mx-auto mb-3 text-white/20" />
+            <p className="text-sm text-white/40">Some saved articles have expired or are no longer in the active stream.</p>
             <Link href="/" className="mt-4 inline-block ios-pill ios-pill-inactive text-xs">
-              Browse news
+              Back to News
             </Link>
           </div>
         )}

@@ -2,11 +2,13 @@
 
 import Image from "next/image";
 import { useState, useSyncExternalStore } from "react";
-import { Bookmark, BookmarkCheck, ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
+import { Bookmark, BookmarkCheck, ArrowRight, Share2, Check } from "lucide-react";
 import type { Article } from "@/lib/types";
 import { getCategoryTheme } from "@/lib/themes";
 import { timeAgo, estimateReadTime } from "@/lib/utils";
 import { useBookmarks } from "@/hooks/use-bookmarks";
+import type { ViewMode } from "./view-mode-toggle";
 
 function useHydrated() {
   return useSyncExternalStore(
@@ -16,17 +18,216 @@ function useHydrated() {
   );
 }
 
-export default function NewsCard({ article }: { article: Article }) {
+const REGION_BADGES: Record<string, string> = {
+  India: "🇮🇳 India",
+  USA: "🇺🇸 USA",
+  Europe: "🇪🇺 Europe",
+  Global: "🌐 Global",
+};
+
+interface NewsCardProps {
+  article: Article;
+  viewMode?: ViewMode;
+  priority?: boolean;
+}
+
+export default function NewsCard({
+  article,
+  viewMode = "bento",
+  priority = false,
+}: NewsCardProps) {
   const theme = getCategoryTheme(article.category);
+  const CategoryIcon = theme.icon;
   const mounted = useHydrated();
   const { bookmarks, toggleBookmark } = useBookmarks();
   const isBookmarked = bookmarks.includes(article.id);
   const readTime = estimateReadTime(article.description || article.title);
   const [imgFailed, setImgFailed] = useState(false);
+  const [imgLoaded, setImgLoaded] = useState(false);
+  const [copied, setCopied] = useState(false);
   const showImage = article.imageUrl && !imgFailed;
 
+  const handleShare = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: article.title,
+          url: article.url,
+        });
+      } else {
+        await navigator.clipboard.writeText(article.url);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      }
+    } catch {
+      /* ignore */
+    }
+  };
+
+  /* ═══════════════════════════════════════════════════════════════
+     1. COMPACT MAGAZINE LIST VIEW MODE
+     ═══════════════════════════════════════════════════════════════ */
+  if (viewMode === "compact") {
+    return (
+      <motion.article
+        whileHover={{ x: 3 }}
+        whileTap={{ scale: 0.99 }}
+        className="group relative flex items-center justify-between gap-3 rounded-2xl ios-glass-elevated p-3 sm:p-4 transition-all hover:bg-white/[0.04]"
+      >
+        <a
+          href={article.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="absolute inset-0 z-0"
+          aria-label={article.title}
+        />
+
+        <div className="flex-1 min-w-0 z-10">
+          <div className="flex items-center gap-2 mb-1 flex-wrap">
+            <span className={`inline-flex items-center gap-1.5 text-[9px] font-extrabold border px-2 py-0.5 rounded-full uppercase ${theme.badge}`}>
+              <CategoryIcon size={11} className="text-current shrink-0" />
+              {article.category}
+            </span>
+            {article.region && (
+              <span className="text-[9px] font-semibold text-white/40 bg-white/5 border border-white/10 px-1.5 py-0.5 rounded-md">
+                {REGION_BADGES[article.region] || article.region}
+              </span>
+            )}
+            <span className="text-[10px] text-white/30 truncate">{article.source}</span>
+            <span className="text-[10px] text-white/20">· {mounted ? timeAgo(article.publishedAt) : "just now"}</span>
+          </div>
+
+          <h3 className={`text-xs sm:text-sm font-bold text-white leading-snug line-clamp-2 transition-colors ${theme.textHover}`}>
+            {article.title}
+          </h3>
+        </div>
+
+        <div className="flex items-center gap-1 shrink-0 z-20">
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              toggleBookmark(article.id);
+            }}
+            className={`p-1.5 rounded-lg transition-all ${
+              isBookmarked ? "text-amber-400 bg-amber-500/10" : "text-white/30 hover:text-white/80 hover:bg-white/5"
+            }`}
+            aria-label="Bookmark"
+          >
+            {isBookmarked ? <BookmarkCheck size={14} /> : <Bookmark size={14} />}
+          </button>
+        </div>
+      </motion.article>
+    );
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     2. VISUAL CARD VIEW MODE (Image-dominant format)
+     ═══════════════════════════════════════════════════════════════ */
+  if (viewMode === "visual") {
+    return (
+      <motion.article
+        whileHover={{ y: -4, scale: 1.01 }}
+        whileTap={{ scale: 0.98 }}
+        className="group relative flex flex-col aspect-[4/5] sm:aspect-[3/4] rounded-3xl overflow-hidden ios-glass-elevated shadow-xl transition-all"
+      >
+        <a
+          href={article.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="absolute inset-0 z-0"
+          aria-label={article.title}
+        />
+
+        {showImage ? (
+          <>
+            {!imgLoaded && (
+              <div className="absolute inset-0 bg-slate-900 animate-pulse" />
+            )}
+            <Image
+              src={article.imageUrl!}
+              alt={article.title}
+              fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              priority={priority}
+              loading={priority ? "eager" : "lazy"}
+              className={`object-cover transition-all duration-700 group-hover:scale-108 ${
+                imgLoaded ? "opacity-100 scale-100" : "opacity-0 scale-105"
+              }`}
+              onLoad={() => setImgLoaded(true)}
+              onError={() => setImgFailed(true)}
+            />
+          </>
+        ) : (
+          <div className={`absolute inset-0 bg-gradient-to-br ${theme.accentBg}`} />
+        )}
+
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-black/10 z-10" />
+
+        {/* Top Badges */}
+        <div className="relative z-20 p-4 flex items-center justify-between">
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <span className={`inline-flex items-center gap-1.5 text-[10px] font-extrabold border px-2.5 py-0.5 rounded-full uppercase backdrop-blur-md ${theme.badge}`}>
+              <CategoryIcon size={12} className="text-current shrink-0" />
+              {article.category}
+            </span>
+            {article.region && (
+              <span className="text-[9px] font-bold text-white/70 bg-black/40 backdrop-blur-md border border-white/15 px-2 py-0.5 rounded-full">
+                {REGION_BADGES[article.region] || article.region}
+              </span>
+            )}
+          </div>
+
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={handleShare}
+              className="p-1.5 rounded-full bg-black/40 backdrop-blur-md border border-white/10 text-white/70 hover:text-white"
+              aria-label="Share"
+            >
+              {copied ? <Check size={12} className="text-cyan-400" /> : <Share2 size={12} />}
+            </button>
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                toggleBookmark(article.id);
+              }}
+              className={`p-1.5 rounded-full backdrop-blur-md border transition-all ${
+                isBookmarked
+                  ? "bg-amber-500/20 border-amber-500/40 text-amber-400"
+                  : "bg-black/40 border-white/10 text-white/70 hover:text-white"
+              }`}
+              aria-label="Bookmark"
+            >
+              {isBookmarked ? <BookmarkCheck size={12} /> : <Bookmark size={12} />}
+            </button>
+          </div>
+        </div>
+
+        {/* Bottom Details */}
+        <div className="relative z-20 mt-auto p-4 sm:p-5 space-y-2">
+          <span className="text-[10px] text-white/50 block font-medium">
+            {article.source} · {mounted ? timeAgo(article.publishedAt) : "just now"}
+          </span>
+          <h3 className="text-sm sm:text-base font-bold text-white leading-snug line-clamp-3">
+            {article.title}
+          </h3>
+        </div>
+      </motion.article>
+    );
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     3. DEFAULT BENTO GRID VIEW MODE
+     ═══════════════════════════════════════════════════════════════ */
   return (
-    <article className={`news-card group relative flex flex-col w-full ios-glass-elevated rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-xl ${theme.borderHover}`}>
+    <motion.article
+      whileHover={{ y: -3 }}
+      whileTap={{ scale: 0.985 }}
+      className={`news-card group relative flex flex-col w-full ios-glass-elevated rounded-3xl overflow-hidden transition-all duration-300 hover:shadow-2xl ${theme.borderHover}`}
+    >
       <a
         href={article.url}
         target="_blank"
@@ -36,15 +237,22 @@ export default function NewsCard({ article }: { article: Article }) {
       />
 
       {showImage && (
-        <div className="relative w-full bg-slate-950/60 overflow-hidden shrink-0 z-10">
+        <div className="relative w-full bg-slate-950/80 overflow-hidden shrink-0 z-10">
           <div className="relative aspect-[16/9] w-full">
+            {!imgLoaded && (
+              <div className="absolute inset-0 bg-slate-900 animate-pulse" />
+            )}
             <Image
               src={article.imageUrl!}
               alt={article.title}
               fill
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-              loading="eager"
-              className="object-cover transition-transform duration-500 group-hover:scale-105"
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1536px) 33vw, 25vw"
+              priority={priority}
+              loading={priority ? "eager" : "lazy"}
+              className={`object-cover transition-all duration-500 group-hover:scale-105 ${
+                imgLoaded ? "opacity-100" : "opacity-0"
+              }`}
+              onLoad={() => setImgLoaded(true)}
               onError={() => setImgFailed(true)}
             />
           </div>
@@ -53,54 +261,81 @@ export default function NewsCard({ article }: { article: Article }) {
       )}
 
       <div className="relative p-4 sm:p-5 flex flex-col flex-1 min-w-0 z-10">
-        
         <div className="space-y-2 min-w-0 flex-1">
-          <div className="flex items-center gap-2">
-            <div className={`inline-flex items-center gap-1.5 text-[10px] font-extrabold border px-2 py-0.5 rounded-full tracking-wider uppercase ${theme.badge}`}>
-              <span className={`h-1.5 w-1.5 rounded-full ${theme.dotBg}`} />
+          <div className="flex items-center gap-2 flex-wrap">
+            <div className={`inline-flex items-center gap-1.5 text-[10px] font-extrabold border px-2 py-0.5 rounded-full tracking-wider uppercase backdrop-blur-sm ${theme.badge}`}>
+              <CategoryIcon size={12} className="text-current shrink-0" />
               {article.category}
             </div>
-            <span className="text-[10px] text-white/30">{readTime} min read</span>
+
+            {article.region && (
+              <span className="text-[9px] font-semibold text-white/50 bg-white/5 border border-white/10 px-2 py-0.5 rounded-full">
+                {REGION_BADGES[article.region] || article.region}
+              </span>
+            )}
+
+            <span className="text-[10px] text-white/35 font-medium">{readTime} min read</span>
           </div>
-          
-          <h3 className={`font-bold text-white leading-snug tracking-tight transition-colors duration-200 ${theme.textHover}
-            ${showImage ? 'text-xs sm:text-[13px] line-clamp-2' : 'text-sm sm:text-[15px] line-clamp-3'} hover:text-white/90`}
+
+          <h3
+            className={`font-bold text-white leading-snug tracking-tight transition-colors duration-200 ${theme.textHover}
+            ${showImage ? "text-xs sm:text-[13px] line-clamp-2" : "text-sm sm:text-[15px] line-clamp-3"} hover:text-white/90`}
           >
             {article.title}
           </h3>
 
           {article.description && (
-            <p className={`text-white/40 leading-relaxed ${showImage ? 'text-[11px] sm:text-xs line-clamp-1' : 'text-xs sm:text-[13px] line-clamp-2'}`}>
+            <p className={`text-white/45 leading-relaxed ${showImage ? "text-[11px] sm:text-xs line-clamp-1" : "text-xs sm:text-[13px] line-clamp-2"}`}>
               {article.description}
             </p>
           )}
         </div>
 
-        <div className="flex items-center justify-between pt-3 mt-auto">
-          <span className="text-[11px] text-white/25 truncate mr-2">
+        <div className="flex items-center justify-between pt-3.5 mt-auto border-t border-white/[0.04]">
+          <span className="text-[11px] text-white/30 truncate mr-2 font-medium">
             {article.source} · {mounted ? timeAgo(article.publishedAt) : "just now"}
           </span>
-          <div className="flex items-center gap-2 sm:gap-3 shrink-0 relative z-20">
+
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 relative z-20">
+            <button
+              onClick={handleShare}
+              className="p-1.5 text-white/30 hover:text-white transition-colors rounded-lg hover:bg-white/5 relative"
+              aria-label="Share story"
+            >
+              {copied ? <Check size={13} className="text-cyan-400" /> : <Share2 size={13} />}
+              {copied && (
+                <span className="absolute -top-7 left-1/2 -translate-x-1/2 rounded bg-cyan-500 px-1.5 py-0.5 text-[9px] font-bold text-black whitespace-nowrap shadow-lg">
+                  Copied!
+                </span>
+              )}
+            </button>
+
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                toggleBookmark(article.id);
+              }}
+              className={`p-1.5 rounded-lg transition-all ${
+                isBookmarked ? "text-amber-400 bg-amber-500/10" : "text-white/30 hover:text-white/80 hover:bg-white/5"
+              }`}
+              aria-label={isBookmarked ? "Remove bookmark" : "Bookmark article"}
+            >
+              {isBookmarked ? <BookmarkCheck size={14} /> : <Bookmark size={14} />}
+            </button>
+
             <a
               href={article.url}
               target="_blank"
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
-              className={`inline-flex items-center gap-1 text-[11px] sm:text-xs font-medium transition-all duration-200 py-1 ${theme.readMore}`}
+              className={`inline-flex items-center gap-1 text-[11px] sm:text-xs font-semibold transition-all duration-200 py-1 pl-1 ${theme.readMore}`}
             >
-              Read more <ArrowRight size={10} className="transition-transform group-hover:translate-x-0.5" />
+              Read <ArrowRight size={10} className="transition-transform group-hover:translate-x-0.5" />
             </a>
-            <button
-              onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleBookmark(article.id); }}
-              className={`transition-opacity p-1 ${isBookmarked ? 'text-amber-400 opacity-100' : 'text-white/30 opacity-60 hover:opacity-100'}`}
-              aria-label={isBookmarked ? "Remove bookmark" : "Bookmark article"}
-            >
-              {isBookmarked ? <BookmarkCheck size={14} /> : <Bookmark size={14} />}
-            </button>
           </div>
         </div>
-
       </div>
-    </article>
+    </motion.article>
   );
 }

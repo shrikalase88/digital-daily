@@ -1,4 +1,5 @@
 export type Category = "Politics & World" | "Technology" | "Finance & Corporate" | "Sports";
+export type Region = "India" | "USA" | "Europe" | "Global";
 
 export interface Article {
   id: string;
@@ -9,6 +10,7 @@ export interface Article {
   imageUrl: string | null;
   publishedAt: string;
   category: Category;
+  region?: Region;
 }
 
 export interface WeatherData {
@@ -28,4 +30,11 @@ export const CATEGORIES: Category[] = [
   "Technology",
   "Finance & Corporate",
   "Sports",
+];
+
+export const REGIONS: Region[] = [
+  "India",
+  "USA",
+  "Europe",
+  "Global",
 ];

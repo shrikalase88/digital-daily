@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --background: #050508;
+  --background: #06060a;
   --foreground: #ffffff;
 }
 
@@ -22,138 +22,195 @@ body {
 }
 
 ::selection {
-  background: rgba(255, 56, 128, 0.3);
+  background: rgba(255, 56, 128, 0.35);
+  color: #ffffff;
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   LIQUID GLASS — Apple-inspired translucent material
-   Layered approach: background + backdrop-filter + border + shadow
-   Fallback: solid semi-transparent background when blur unsupported
+   2026 LIQUID GLASS & HYPER-TACTILE SURFACES
    ═══════════════════════════════════════════════════════════════ */
 
-/* Core glass material — used on all floating surfaces */
 .ios-glass {
-  background: rgba(18, 18, 24, 0.24);
-  -webkit-backdrop-filter: blur(40px) saturate(1.8) brightness(1.1);
-  backdrop-filter: blur(40px) saturate(1.8) brightness(1.1);
-  border: 0.5px solid rgba(255, 255, 255, 0.04);
+  background: rgba(18, 18, 26, 0.45);
+  -webkit-backdrop-filter: blur(48px) saturate(1.9) brightness(1.08);
+  backdrop-filter: blur(48px) saturate(1.9) brightness(1.08);
+  border: 1px solid rgba(255, 255, 255, 0.07);
   box-shadow:
-    0 0 0 0.5px rgba(255, 255, 255, 0.02) inset,
-    0 1px 0 0 rgba(255, 255, 255, 0.03) inset,
-    0 8px 32px rgba(0, 0, 0, 0.3),
-    0 2px 8px rgba(0, 0, 0, 0.15);
+    0 0 0 1px rgba(255, 255, 255, 0.03) inset,
+    0 1px 0 0 rgba(255, 255, 255, 0.08) inset,
+    0 12px 36px rgba(0, 0, 0, 0.42),
+    0 2px 10px rgba(0, 0, 0, 0.25);
 }
 
-/* Fallback for browsers without backdrop-filter support */
+.ios-glass-dock {
+  background: rgba(12, 12, 18, 0.72);
+  -webkit-backdrop-filter: blur(60px) saturate(2.1) brightness(1.15);
+  backdrop-filter: blur(60px) saturate(2.1) brightness(1.15);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.05) inset,
+    0 1px 0 0 rgba(255, 255, 255, 0.15) inset,
+    0 20px 50px rgba(0, 0, 0, 0.65),
+    0 0 24px rgba(236, 72, 153, 0.12);
+}
+
+.ios-glass-elevated {
+  background: rgba(22, 22, 32, 0.48);
+  -webkit-backdrop-filter: blur(56px) saturate(2) brightness(1.12);
+  backdrop-filter: blur(56px) saturate(2) brightness(1.12);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.04) inset,
+    0 1px 0 0 rgba(255, 255, 255, 0.09) inset,
+    0 16px 44px rgba(0, 0, 0, 0.45),
+    0 4px 14px rgba(0, 0, 0, 0.25);
+}
+
 @supports not (backdrop-filter: blur(1px)) {
   .ios-glass {
-    background: rgba(18, 18, 24, 0.4);
-    box-shadow:
-      0 0 0 0.5px rgba(255, 255, 255, 0.05) inset,
-      0 1px 0 0 rgba(255, 255, 255, 0.06) inset,
-      0 8px 32px rgba(0, 0, 0, 0.45),
-      0 2px 8px rgba(0, 0, 0, 0.22);
+    background: rgba(18, 18, 26, 0.85);
   }
-}
-
-/* Elevated glass — for cards and prominent surfaces */
-.ios-glass-elevated {
-  background: rgba(22, 22, 30, 0.27);
-  -webkit-backdrop-filter: blur(56px) saturate(2) brightness(1.15);
-  backdrop-filter: blur(56px) saturate(2) brightness(1.15);
-  border: 0.5px solid rgba(255, 255, 255, 0.05);
-  box-shadow:
-    0 0 0 0.5px rgba(255, 255, 255, 0.03) inset,
-    0 1px 0 0 rgba(255, 255, 255, 0.04) inset,
-    0 12px 40px rgba(0, 0, 0, 0.38),
-    0 4px 12px rgba(0, 0, 0, 0.19);
-}
-
-@supports not (backdrop-filter: blur(1px)) {
+  .ios-glass-dock {
+    background: rgba(12, 12, 18, 0.95);
+  }
   .ios-glass-elevated {
-    background: rgba(22, 22, 30, 0.42);
+    background: rgba(22, 22, 32, 0.9);
   }
 }
 
-/* ── Liquid Ambient Orbs ── */
-@keyframes liquid-orbit {
-  0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); }
-  25% { transform: translate(30px, -40px) scale(1.08) rotate(90deg); }
-  50% { transform: translate(-20px, 20px) scale(0.95) rotate(180deg); }
-  75% { transform: translate(25px, 30px) scale(1.05) rotate(270deg); }
+/* ── 2026 Aurora Ambient Lights ── */
+@keyframes aurora-flow {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg) scale(1);
+  }
+  25% {
+    transform: translate(40px, -50px) rotate(90deg) scale(1.12);
+  }
+  50% {
+    transform: translate(-30px, 35px) rotate(180deg) scale(0.92);
+  }
+  75% {
+    transform: translate(35px, 45px) rotate(270deg) scale(1.08);
+  }
 }
 
-@keyframes liquid-orbit-slow {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(-35px, 25px) scale(1.12); }
-  66% { transform: translate(20px, -30px) scale(0.9); }
+@keyframes aurora-flow-reverse {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg) scale(1);
+  }
+  33% {
+    transform: translate(-45px, 35px) rotate(-120deg) scale(1.15);
+  }
+  66% {
+    transform: translate(30px, -40px) rotate(-240deg) scale(0.88);
+  }
 }
 
-.orb-1 {
-  animation: liquid-orbit 18s ease-in-out infinite;
+.aurora-1 {
+  animation: aurora-flow 20s ease-in-out infinite;
 }
-.orb-2 {
-  animation: liquid-orbit-slow 22s ease-in-out infinite reverse;
+.aurora-2 {
+  animation: aurora-flow-reverse 26s ease-in-out infinite;
 }
-.orb-3 {
-  animation: liquid-orbit 25s ease-in-out infinite 2s;
+.aurora-3 {
+  animation: aurora-flow 24s ease-in-out infinite 3s;
 }
 
-/* ── Pill styles — glass navigation controls ── */
+/* ── Story Rings & Live Pulse Animations ── */
+@keyframes ring-glow-pulse {
+  0%, 100% {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 10px rgba(244, 63, 94, 0.6));
+  }
+}
+
+.story-ring-glow {
+  animation: ring-glow-pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes live-beacon {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 6px rgba(239, 68, 68, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+  }
+}
+
+.live-badge-beacon {
+  animation: live-beacon 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* ── Pills & Nav controls ── */
 .ios-pill {
   border-radius: 9999px;
   padding: 0.375rem 0.875rem;
   font-size: 0.8125rem;
   font-weight: 500;
   letter-spacing: -0.01em;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .ios-pill-active {
-  background: linear-gradient(135deg, rgba(255, 56, 128, 0.3), rgba(120, 64, 255, 0.3));
-  -webkit-backdrop-filter: blur(20px) saturate(1.6);
-  backdrop-filter: blur(20px) saturate(1.6);
-  border: 0.5px solid rgba(255, 255, 255, 0.12);
+  background: linear-gradient(135deg, rgba(255, 56, 128, 0.35), rgba(120, 64, 255, 0.35));
+  -webkit-backdrop-filter: blur(24px) saturate(1.8);
+  backdrop-filter: blur(24px) saturate(1.8);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   color: #fff;
   box-shadow:
-    0 0 0 0.5px rgba(255, 255, 255, 0.05) inset,
-    0 4px 16px rgba(255, 56, 128, 0.15);
+    0 0 0 1px rgba(255, 255, 255, 0.08) inset,
+    0 4px 20px rgba(255, 56, 128, 0.25);
 }
 
 .ios-pill-inactive {
-  color: rgba(255, 255, 255, 0.45);
-  border: 0.5px solid rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.07);
 }
 .ios-pill-inactive:hover {
-  color: rgba(255, 255, 255, 0.8);
-  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.12);
 }
 
-/* ── Card glow on hover ── */
+/* ── 2026 Card Glow & Conic Gradient Borders ── */
 .ios-card-glow {
   position: relative;
-  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
+
 .ios-card-glow::before {
   content: '';
   position: absolute;
   inset: -1px;
   border-radius: inherit;
-  background: linear-gradient(135deg, rgba(255, 56, 128, 0.2), rgba(120, 64, 255, 0.2), rgba(0, 200, 255, 0.2));
+  background: linear-gradient(135deg, rgba(244, 63, 94, 0.25), rgba(139, 92, 246, 0.25), rgba(6, 182, 212, 0.25));
   z-index: -1;
   opacity: 0;
-  transition: opacity 0.5s ease;
-  filter: blur(6px);
+  transition: opacity 0.4s ease;
+  filter: blur(8px);
 }
+
 .ios-card-glow:hover::before {
   opacity: 1;
 }
 
-/* ── Shimmer overlay — light sweep across glass ── */
+/* ── Shimmer Sweep ── */
 .ios-shimmer {
   position: relative;
   overflow: hidden;
 }
+
 .ios-shimmer::after {
   content: '';
   position: absolute;
@@ -161,13 +218,13 @@ body {
   background: linear-gradient(
     105deg,
     transparent 35%,
-    rgba(255, 255, 255, 0.03) 45%,
-    rgba(255, 255, 255, 0.06) 50%,
-    rgba(255, 255, 255, 0.03) 55%,
+    rgba(255, 255, 255, 0.04) 45%,
+    rgba(255, 255, 255, 0.08) 50%,
+    rgba(255, 255, 255, 0.04) 55%,
     transparent 65%
   );
   background-size: 200% 100%;
-  animation: shimmer-sweep 6s ease-in-out infinite;
+  animation: shimmer-sweep 7s ease-in-out infinite;
   pointer-events: none;
   border-radius: inherit;
 }
@@ -177,34 +234,26 @@ body {
   100% { background-position: -200% 0; }
 }
 
-/* ── Category accent gradient pills ── */
-.cat-politics-world { background: linear-gradient(135deg, rgba(255, 56, 128, 0.3), rgba(255, 159, 10, 0.3)); }
-.cat-technology { background: linear-gradient(135deg, rgba(0, 200, 255, 0.3), rgba(120, 64, 255, 0.3)); }
-.cat-finance-corporate { background: linear-gradient(135deg, rgba(50, 220, 100, 0.3), rgba(0, 200, 255, 0.3)); }
-.cat-sports { background: linear-gradient(135deg, rgba(255, 159, 10, 0.3), rgba(255, 56, 128, 0.3)); }
+/* ── Category Accents ── */
+.cat-politics-world { background: linear-gradient(135deg, rgba(255, 56, 128, 0.25), rgba(255, 159, 10, 0.2)); }
+.cat-technology { background: linear-gradient(135deg, rgba(0, 200, 255, 0.25), rgba(120, 64, 255, 0.2)); }
+.cat-finance-corporate { background: linear-gradient(135deg, rgba(50, 220, 100, 0.25), rgba(0, 200, 255, 0.2)); }
+.cat-sports { background: linear-gradient(135deg, rgba(255, 159, 10, 0.25), rgba(255, 56, 128, 0.2)); }
 
-/* ── Tick fadeIn ── */
-@keyframes fadeIn {
-  0% { opacity: 0; transform: translateY(4px); }
-  100% { opacity: 1; transform: translateY(0); }
-}
-.animate-fadeIn { animation: fadeIn 0.3s ease-out; }
-
-/* ── Scrollbar ── */
-::-webkit-scrollbar { width: 4px; }
+/* ── Custom Scrollbar ── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.06); border-radius: 2px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.12); }
+::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
 
-/* ── Hide scrollbar utility ── */
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-/* ── News Grid Layout ── */
+/* ── Responsive News Grid Layout ── */
 .news-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px;
+  gap: 16px;
   width: 100%;
 }
 
@@ -213,30 +262,49 @@ body {
 }
 
 .news-card {
-  min-height: 160px;
+  min-height: 170px;
   display: flex;
   flex-direction: column;
 }
 
-.card-meta {
-  margin-top: auto;
+/* Compact view mode */
+.news-compact-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
 }
 
-/* Responsive breakpoints */
-@media (max-width: 900px) {
+/* Visual magazine mode */
+.news-visual-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+@media (max-width: 1024px) {
   .news-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-  .news-card:first-child {
-    grid-column: span 2;
+  .news-visual-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 640px) {
   .news-grid {
     grid-template-columns: 1fr;
+    gap: 12px;
   }
   .news-card:first-child {
     grid-column: span 1;
   }
+  .news-visual-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+}
+
+/* Bottom safe-area for mobile dock */
+.pb-mobile-dock {
+  padding-bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px));
 }
