@@ -17,10 +17,10 @@ export default function ViewModeToggle({
     <div className="flex items-center gap-1 bg-white/[0.04] border border-white/10 rounded-full p-1 backdrop-blur-md">
       <button
         onClick={() => onViewModeChange("bento")}
-        className={`flex h-7 items-center gap-1.5 px-2.5 rounded-full text-xs font-medium transition-all ${
+        className={`flex h-7 items-center gap-1.5 px-2.5 rounded-full text-xs font-medium transition-all active:scale-95 ${
           viewMode === "bento"
             ? "bg-white/20 text-white shadow-sm"
-            : "text-white/40 hover:text-white/70"
+            : "text-zinc-400 hover:text-zinc-200"
         }`}
         title="Bento Grid View"
         aria-label="Bento Grid View"
@@ -31,10 +31,10 @@ export default function ViewModeToggle({
 
       <button
         onClick={() => onViewModeChange("compact")}
-        className={`flex h-7 items-center gap-1.5 px-2.5 rounded-full text-xs font-medium transition-all ${
+        className={`flex h-7 items-center gap-1.5 px-2.5 rounded-full text-xs font-medium transition-all active:scale-95 ${
           viewMode === "compact"
             ? "bg-white/20 text-white shadow-sm"
-            : "text-white/40 hover:text-white/70"
+            : "text-zinc-400 hover:text-zinc-200"
         }`}
         title="Compact Feed View"
         aria-label="Compact Feed View"
@@ -45,10 +45,10 @@ export default function ViewModeToggle({
 
       <button
         onClick={() => onViewModeChange("visual")}
-        className={`flex h-7 items-center gap-1.5 px-2.5 rounded-full text-xs font-medium transition-all ${
+        className={`flex h-7 items-center gap-1.5 px-2.5 rounded-full text-xs font-medium transition-all active:scale-95 ${
           viewMode === "visual"
             ? "bg-white/20 text-white shadow-sm"
-            : "text-white/40 hover:text-white/70"
+            : "text-zinc-400 hover:text-zinc-200"
         }`}
         title="Visual Cards View"
         aria-label="Visual Cards View"

@@ -3,7 +3,20 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, ChevronLeft, ChevronRight, Bookmark, BookmarkCheck, ExternalLink, Share2, Sparkles, Clock, Pause, Play } from "lucide-react";
+import {
+  X,
+  ChevronLeft,
+  ChevronRight,
+  Bookmark,
+  BookmarkCheck,
+  ExternalLink,
+  Share2,
+  Sparkles,
+  Clock,
+  Pause,
+  Play,
+  Check,
+} from "lucide-react";
 import type { Article, Category } from "@/lib/types";
 import { getCategoryTheme } from "@/lib/themes";
 import { timeAgo, estimateReadTime } from "@/lib/utils";
@@ -144,18 +157,13 @@ function StoryViewerContent({
   if (totalStories === 0 || !currentArticle) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 sm:p-4 md:p-6 bg-black/85 backdrop-blur-2xl">
-      {/* Ambient background glow */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[800px] rounded-full bg-gradient-to-tr from-fuchsia-600/20 via-rose-500/15 to-cyan-400/20 blur-[120px]" />
-      </div>
-
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 sm:p-4 md:p-6 bg-black/80 backdrop-blur-xl">
       <motion.div
-        initial={{ opacity: 0, scale: 0.95, y: 15 }}
+        initial={{ opacity: 0, scale: 0.97, y: 10 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.95, y: 15 }}
-        transition={{ type: "spring", damping: 26, stiffness: 320 }}
-        className="relative w-full h-full sm:h-[88vh] md:h-[600px] sm:max-w-md md:max-w-4xl bg-[#090910] sm:rounded-3xl border border-white/15 overflow-hidden flex flex-col shadow-2xl"
+        exit={{ opacity: 0, scale: 0.97, y: 10 }}
+        transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+        className="relative w-full h-full sm:h-[88vh] md:h-[600px] sm:max-w-md md:max-w-4xl bg-[#121217] sm:rounded-3xl border border-white/10 overflow-hidden flex flex-col shadow-2xl"
         onMouseDown={handleHoldStart}
         onMouseUp={handleHoldEnd}
         onTouchStart={handleHoldStart}
@@ -180,7 +188,7 @@ function StoryViewerContent({
                 }}
               >
                 <div
-                  className="h-full bg-white transition-all duration-75 ease-linear rounded-full shadow-[0_0_8px_rgba(255,255,255,0.9)]"
+                  className="h-full bg-white transition-all duration-75 ease-linear rounded-full"
                   style={{ width: fillWidth }}
                 />
               </div>
@@ -192,14 +200,14 @@ function StoryViewerContent({
         <div className="absolute top-7 left-0 right-0 z-30 px-4 md:px-6 flex items-center justify-between pointer-events-auto">
           <div className="flex items-center gap-2.5">
             <div className="flex h-7 w-7 items-center justify-center rounded-full bg-white/10 backdrop-blur-md border border-white/15">
-              <Sparkles size={13} className="text-cyan-300" />
+              <Sparkles size={13} className="text-zinc-300" />
             </div>
             <div>
-              <span className="text-xs font-bold text-white tracking-wide block leading-none">
+              <span className="text-xs font-semibold text-white tracking-wide block leading-none">
                 {currentArticle.source}
               </span>
-              <span className="text-[10px] text-white/50">
-                {timeAgo(currentArticle.publishedAt)} · Story {currentIndex + 1} of {totalStories}
+              <span className="text-[10px] text-zinc-400 font-mono mt-0.5 block">
+                {timeAgo(currentArticle.publishedAt)} · {currentIndex + 1}/{totalStories}
               </span>
             </div>
           </div>
@@ -207,14 +215,14 @@ function StoryViewerContent({
           <div className="flex items-center gap-2">
             <button
               onClick={() => setIsPaused((p) => !p)}
-              className="hidden sm:flex h-8 w-8 items-center justify-center rounded-full bg-black/40 backdrop-blur-md border border-white/15 text-white/80 hover:text-white"
+              className="hidden sm:flex h-8 w-8 items-center justify-center rounded-full bg-black/50 backdrop-blur-md border border-white/15 text-zinc-300 hover:text-white active:scale-95 transition-all"
               aria-label={isPaused ? "Play" : "Pause"}
             >
               {isPaused ? <Play size={13} className="ml-0.5" /> : <Pause size={13} />}
             </button>
             <button
               onClick={onClose}
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-black/40 backdrop-blur-md border border-white/15 text-white/80 hover:text-white transition-colors"
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-black/50 backdrop-blur-md border border-white/15 text-zinc-300 hover:text-white active:scale-95 transition-all"
               aria-label="Close"
             >
               <X size={16} />
@@ -225,7 +233,7 @@ function StoryViewerContent({
         {/* ── Desktop & Tablet Split View (>= md) vs Mobile Full Stack (< md) ── */}
         <div className="relative flex-1 w-full overflow-hidden flex flex-col md:flex-row pt-12 md:pt-14">
           {/* Left Column: Visual Image Cover */}
-          <div className="relative flex-1 md:w-[55%] h-[55%] md:h-full bg-slate-950 overflow-hidden flex flex-col justify-end">
+          <div className="relative flex-1 md:w-[55%] h-[55%] md:h-full bg-zinc-950 overflow-hidden flex flex-col justify-end">
             {currentArticle.imageUrl ? (
               <Image
                 src={currentArticle.imageUrl}
@@ -236,13 +244,13 @@ function StoryViewerContent({
                 sizes="(max-width: 768px) 100vw, 550px"
               />
             ) : (
-              <div className="absolute inset-0 bg-gradient-to-br from-indigo-950 via-purple-950 to-slate-950 flex items-center justify-center p-8">
-                <Sparkles size={64} className="text-white/15 animate-pulse" />
+              <div className="absolute inset-0 bg-zinc-900 flex items-center justify-center p-8">
+                <Sparkles size={48} className="text-zinc-600" />
               </div>
             )}
 
             {/* Gradient Dark Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#090910] via-[#090910]/40 to-transparent md:bg-gradient-to-r md:from-transparent md:to-[#090910] z-10" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#121217] via-[#121217]/50 to-transparent md:bg-gradient-to-r md:from-transparent md:to-[#121217] z-10" />
 
             {/* Tap Navigation Zones */}
             <div
@@ -267,8 +275,10 @@ function StoryViewerContent({
                 handlePrev();
               }}
               disabled={currentIndex === 0}
-              className={`absolute left-3 top-1/2 -translate-y-1/2 z-30 h-10 w-10 items-center justify-center rounded-full bg-black/60 backdrop-blur-md border border-white/15 text-white transition-opacity ${
-                currentIndex === 0 ? "opacity-0 pointer-events-none" : "opacity-75 hover:opacity-100 flex"
+              className={`absolute left-3 top-1/2 -translate-y-1/2 z-30 h-10 w-10 items-center justify-center rounded-full bg-black/60 backdrop-blur-md border border-white/15 text-white active:scale-95 transition-all ${
+                currentIndex === 0
+                  ? "opacity-0 pointer-events-none"
+                  : "opacity-80 hover:opacity-100 flex"
               }`}
               aria-label="Previous story"
             >
@@ -280,7 +290,7 @@ function StoryViewerContent({
                 e.stopPropagation();
                 handleNext();
               }}
-              className="absolute right-3 top-1/2 -translate-y-1/2 z-30 h-10 w-10 items-center justify-center rounded-full bg-black/60 backdrop-blur-md border border-white/15 text-white opacity-75 hover:opacity-100 transition-opacity flex"
+              className="absolute right-3 top-1/2 -translate-y-1/2 z-30 h-10 w-10 items-center justify-center rounded-full bg-black/60 backdrop-blur-md border border-white/15 text-white active:scale-95 opacity-80 hover:opacity-100 transition-all flex"
               aria-label="Next story"
             >
               <ChevronRight size={20} />
@@ -288,7 +298,7 @@ function StoryViewerContent({
           </div>
 
           {/* Right Column: Details & Actions */}
-          <div className="relative z-30 flex-1 md:w-[45%] p-5 md:p-8 flex flex-col justify-between overflow-y-auto no-scrollbar pointer-events-auto bg-[#090910]">
+          <div className="relative z-30 flex-1 md:w-[45%] p-5 md:p-8 flex flex-col justify-between overflow-y-auto no-scrollbar pointer-events-auto bg-[#121217]">
             <div className="space-y-3.5">
               <div className="flex items-center gap-2">
                 <span
@@ -304,7 +314,7 @@ function StoryViewerContent({
                   {currentArticle.category}
                 </span>
 
-                <span className="flex items-center gap-1 text-[11px] text-white/50 font-medium">
+                <span className="flex items-center gap-1 text-[11px] text-zinc-400 font-medium font-mono">
                   <Clock size={11} />
                   {estimateReadTime(currentArticle.description || currentArticle.title)} min read
                 </span>
@@ -315,7 +325,7 @@ function StoryViewerContent({
               </h2>
 
               {currentArticle.description && (
-                <p className="text-xs sm:text-sm text-white/70 leading-relaxed line-clamp-4 md:line-clamp-6">
+                <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed line-clamp-4 md:line-clamp-6">
                   {currentArticle.description}
                 </p>
               )}
@@ -329,7 +339,7 @@ function StoryViewerContent({
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={(e) => e.stopPropagation()}
-                  className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-white text-black px-4 py-2.5 text-xs sm:text-sm font-bold hover:bg-white/90 transition-all shadow-lg shadow-white/10"
+                  className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-white text-zinc-950 px-4 py-2.5 text-xs sm:text-sm font-semibold hover:bg-zinc-200 active:scale-[0.98] transition-all shadow-md"
                 >
                   Read Full Source <ExternalLink size={14} />
                 </a>
@@ -339,10 +349,10 @@ function StoryViewerContent({
                     e.stopPropagation();
                     toggleBookmark(currentArticle.id);
                   }}
-                  className={`flex h-10 w-10 items-center justify-center rounded-xl border backdrop-blur-md transition-all ${
+                  className={`flex h-10 w-10 items-center justify-center rounded-xl border backdrop-blur-md active:scale-95 transition-all ${
                     isBookmarked
-                      ? "bg-amber-500/20 border-amber-500/40 text-amber-400"
-                      : "bg-white/5 border-white/10 text-white/70 hover:text-white hover:bg-white/10"
+                      ? "bg-amber-500/20 border-amber-500/40 text-amber-300"
+                      : "bg-white/5 border-white/10 text-zinc-400 hover:text-white hover:bg-white/10"
                   }`}
                   aria-label="Bookmark"
                 >
@@ -351,12 +361,12 @@ function StoryViewerContent({
 
                 <button
                   onClick={handleShare}
-                  className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 border border-white/10 backdrop-blur-md text-white/70 hover:text-white hover:bg-white/10 transition-all relative"
+                  className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 border border-white/10 backdrop-blur-md text-zinc-400 hover:text-white hover:bg-white/10 active:scale-95 transition-all relative"
                   aria-label="Share story"
                 >
-                  <Share2 size={18} />
+                  {copied ? <Check size={18} className="text-emerald-400" /> : <Share2 size={18} />}
                   {copied && (
-                    <span className="absolute -top-7 left-1/2 -translate-x-1/2 rounded bg-cyan-500 px-1.5 py-0.5 text-[9px] font-bold text-black whitespace-nowrap">
+                    <span className="absolute -top-7 left-1/2 -translate-x-1/2 rounded bg-emerald-500 px-1.5 py-0.5 text-[9px] font-bold text-black whitespace-nowrap">
                       Copied!
                     </span>
                   )}
@@ -364,10 +374,16 @@ function StoryViewerContent({
               </div>
 
               {/* Desktop Keyboard Hints */}
-              <div className="hidden md:flex items-center justify-between text-[10px] text-white/30 pt-1">
-                <span>Navigate: <kbd className="rounded bg-white/10 px-1 py-0.5 text-white/60">←</kbd> <kbd className="rounded bg-white/10 px-1 py-0.5 text-white/60">→</kbd></span>
-                <span>Pause: <kbd className="rounded bg-white/10 px-1 py-0.5 text-white/60">Space</kbd></span>
-                <span>Close: <kbd className="rounded bg-white/10 px-1 py-0.5 text-white/60">Esc</kbd></span>
+              <div className="hidden md:flex items-center justify-between text-[10px] text-zinc-400 font-mono pt-1">
+                <span>
+                  Navigate: <kbd className="rounded bg-white/10 px-1 py-0.5 text-zinc-300">←</kbd> <kbd className="rounded bg-white/10 px-1 py-0.5 text-zinc-300">→</kbd>
+                </span>
+                <span>
+                  Pause: <kbd className="rounded bg-white/10 px-1 py-0.5 text-zinc-300">Space</kbd>
+                </span>
+                <span>
+                  Close: <kbd className="rounded bg-white/10 px-1 py-0.5 text-zinc-300">Esc</kbd>
+                </span>
               </div>
             </div>
           </div>

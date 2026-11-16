@@ -1,15 +1,24 @@
 @import "tailwindcss";
 
 :root {
-  --background: #06060a;
-  --foreground: #ffffff;
+  --background: #09090b;
+  --foreground: #f4f4f5;
+  --surface: #121217;
+  --surface-elevated: #18181f;
+  --surface-border: rgba(255, 255, 255, 0.08);
+  --surface-border-subtle: rgba(255, 255, 255, 0.04);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', 'Segoe UI', Roboto, sans-serif;
-  --font-mono: 'SF Mono', 'SFMono-Regular', 'Fira Code', monospace;
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: "SF Mono", "SFMono-Regular", "Menlo", "Consolas", monospace;
+}
+
+html {
+  scroll-behavior: smooth;
+  color-scheme: dark;
 }
 
 body {
@@ -19,237 +28,174 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
 }
 
 ::selection {
-  background: rgba(255, 56, 128, 0.35);
+  background: rgba(255, 255, 255, 0.18);
   color: #ffffff;
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   2026 LIQUID GLASS & HYPER-TACTILE SURFACES
+   EDITORIAL TACTILE SURFACES (Emil Kowalski Taste Standards)
    ═══════════════════════════════════════════════════════════════ */
 
 .ios-glass {
-  background: rgba(18, 18, 26, 0.45);
-  -webkit-backdrop-filter: blur(48px) saturate(1.9) brightness(1.08);
-  backdrop-filter: blur(48px) saturate(1.9) brightness(1.08);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: rgba(18, 18, 24, 0.72);
+  -webkit-backdrop-filter: blur(24px) saturate(1.4);
+  backdrop-filter: blur(24px) saturate(1.4);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.03) inset,
-    0 1px 0 0 rgba(255, 255, 255, 0.08) inset,
-    0 12px 36px rgba(0, 0, 0, 0.42),
-    0 2px 10px rgba(0, 0, 0, 0.25);
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.06),
+    0 4px 20px -2px rgba(0, 0, 0, 0.35),
+    0 1px 3px 0 rgba(0, 0, 0, 0.2);
 }
 
 .ios-glass-dock {
-  background: rgba(12, 12, 18, 0.72);
-  -webkit-backdrop-filter: blur(60px) saturate(2.1) brightness(1.15);
-  backdrop-filter: blur(60px) saturate(2.1) brightness(1.15);
+  background: rgba(15, 15, 20, 0.85);
+  -webkit-backdrop-filter: blur(32px) saturate(1.5);
+  backdrop-filter: blur(32px) saturate(1.5);
   border: 1px solid rgba(255, 255, 255, 0.12);
   box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.05) inset,
-    0 1px 0 0 rgba(255, 255, 255, 0.15) inset,
-    0 20px 50px rgba(0, 0, 0, 0.65),
-    0 0 24px rgba(236, 72, 153, 0.12);
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.1),
+    0 16px 40px -8px rgba(0, 0, 0, 0.7),
+    0 4px 12px -2px rgba(0, 0, 0, 0.4);
 }
 
 .ios-glass-elevated {
-  background: rgba(22, 22, 32, 0.48);
-  -webkit-backdrop-filter: blur(56px) saturate(2) brightness(1.12);
-  backdrop-filter: blur(56px) saturate(2) brightness(1.12);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(22, 22, 30, 0.88);
+  -webkit-backdrop-filter: blur(32px) saturate(1.4);
+  backdrop-filter: blur(32px) saturate(1.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.04) inset,
-    0 1px 0 0 rgba(255, 255, 255, 0.09) inset,
-    0 16px 44px rgba(0, 0, 0, 0.45),
-    0 4px 14px rgba(0, 0, 0, 0.25);
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.08),
+    0 12px 32px -4px rgba(0, 0, 0, 0.5),
+    0 2px 6px 0 rgba(0, 0, 0, 0.3);
 }
 
 @supports not (backdrop-filter: blur(1px)) {
   .ios-glass {
-    background: rgba(18, 18, 26, 0.85);
+    background: #121217;
   }
   .ios-glass-dock {
-    background: rgba(12, 12, 18, 0.95);
+    background: #0f0f14;
   }
   .ios-glass-elevated {
-    background: rgba(22, 22, 32, 0.9);
+    background: #16161e;
   }
 }
 
-/* ── 2026 Aurora Ambient Lights ── */
-@keyframes aurora-flow {
-  0%, 100% {
-    transform: translate(0, 0) rotate(0deg) scale(1);
-  }
-  25% {
-    transform: translate(40px, -50px) rotate(90deg) scale(1.12);
-  }
-  50% {
-    transform: translate(-30px, 35px) rotate(180deg) scale(0.92);
-  }
-  75% {
-    transform: translate(35px, 45px) rotate(270deg) scale(1.08);
-  }
-}
-
-@keyframes aurora-flow-reverse {
-  0%, 100% {
-    transform: translate(0, 0) rotate(0deg) scale(1);
-  }
-  33% {
-    transform: translate(-45px, 35px) rotate(-120deg) scale(1.15);
-  }
-  66% {
-    transform: translate(30px, -40px) rotate(-240deg) scale(0.88);
-  }
-}
-
-.aurora-1 {
-  animation: aurora-flow 20s ease-in-out infinite;
-}
-.aurora-2 {
-  animation: aurora-flow-reverse 26s ease-in-out infinite;
-}
-.aurora-3 {
-  animation: aurora-flow 24s ease-in-out infinite 3s;
-}
-
-/* ── Story Rings & Live Pulse Animations ── */
-@keyframes ring-glow-pulse {
-  0%, 100% {
-    opacity: 0.8;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.05);
-    filter: drop-shadow(0 0 10px rgba(244, 63, 94, 0.6));
-  }
-}
-
-.story-ring-glow {
-  animation: ring-glow-pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
+/* ── Live Beacons & Micro-Pulses ── */
 @keyframes live-beacon {
   0% {
     transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+    box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.6);
   }
   70% {
     transform: scale(1);
-    box-shadow: 0 0 0 6px rgba(239, 68, 68, 0);
+    box-shadow: 0 0 0 5px rgba(244, 63, 94, 0);
   }
   100% {
     transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+    box-shadow: 0 0 0 0 rgba(244, 63, 94, 0);
   }
 }
 
 .live-badge-beacon {
-  animation: live-beacon 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  animation: live-beacon 2.4s cubic-bezier(0.16, 1, 0.3, 1) infinite;
 }
 
 /* ── Pills & Nav controls ── */
 .ios-pill {
   border-radius: 9999px;
-  padding: 0.375rem 0.875rem;
+  padding: 0.35rem 0.85rem;
   font-size: 0.8125rem;
   font-weight: 500;
   letter-spacing: -0.01em;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .ios-pill-active {
-  background: linear-gradient(135deg, rgba(255, 56, 128, 0.35), rgba(120, 64, 255, 0.35));
-  -webkit-backdrop-filter: blur(24px) saturate(1.8);
-  backdrop-filter: blur(24px) saturate(1.8);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  color: #fff;
+  background: rgba(255, 255, 255, 0.12);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
   box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.08) inset,
-    0 4px 20px rgba(255, 56, 128, 0.25);
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.12),
+    0 2px 8px -1px rgba(0, 0, 0, 0.4);
 }
 
 .ios-pill-inactive {
-  color: rgba(255, 255, 255, 0.55);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  color: rgba(244, 244, 245, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.02);
 }
+
 .ios-pill-inactive:hover {
-  color: rgba(255, 255, 255, 0.9);
+  color: #ffffff;
   background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.14);
 }
 
-/* ── 2026 Card Glow & Conic Gradient Borders ── */
-.ios-card-glow {
+/* ── Refined Card Hover State (Zero AI-Slop Rainbow Glow) ── */
+.ios-card-interactive {
   position: relative;
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.ios-card-glow::before {
-  content: '';
-  position: absolute;
-  inset: -1px;
-  border-radius: inherit;
-  background: linear-gradient(135deg, rgba(244, 63, 94, 0.25), rgba(139, 92, 246, 0.25), rgba(6, 182, 212, 0.25));
-  z-index: -1;
-  opacity: 0;
-  transition: opacity 0.4s ease;
-  filter: blur(8px);
+.ios-card-interactive:hover {
+  border-color: rgba(255, 255, 255, 0.16);
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.08),
+    0 12px 30px -4px rgba(0, 0, 0, 0.5);
 }
 
-.ios-card-glow:hover::before {
-  opacity: 1;
+/* ── Category Subtle Backgrounds ── */
+.cat-politics-world {
+  background: rgba(244, 63, 94, 0.08);
+  border-color: rgba(244, 63, 94, 0.25);
+}
+.cat-technology {
+  background: rgba(56, 189, 248, 0.08);
+  border-color: rgba(56, 189, 248, 0.25);
+}
+.cat-finance-corporate {
+  background: rgba(16, 185, 129, 0.08);
+  border-color: rgba(16, 185, 129, 0.25);
+}
+.cat-sports {
+  background: rgba(245, 158, 11, 0.08);
+  border-color: rgba(245, 158, 11, 0.25);
 }
 
-/* ── Shimmer Sweep ── */
-.ios-shimmer {
-  position: relative;
-  overflow: hidden;
+/* ── Custom Minimal Scrollbar ── */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.24);
 }
 
-.ios-shimmer::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    105deg,
-    transparent 35%,
-    rgba(255, 255, 255, 0.04) 45%,
-    rgba(255, 255, 255, 0.08) 50%,
-    rgba(255, 255, 255, 0.04) 55%,
-    transparent 65%
-  );
-  background-size: 200% 100%;
-  animation: shimmer-sweep 7s ease-in-out infinite;
-  pointer-events: none;
-  border-radius: inherit;
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
-@keyframes shimmer-sweep {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
-
-/* ── Category Accents ── */
-.cat-politics-world { background: linear-gradient(135deg, rgba(255, 56, 128, 0.25), rgba(255, 159, 10, 0.2)); }
-.cat-technology { background: linear-gradient(135deg, rgba(0, 200, 255, 0.25), rgba(120, 64, 255, 0.2)); }
-.cat-finance-corporate { background: linear-gradient(135deg, rgba(50, 220, 100, 0.25), rgba(0, 200, 255, 0.2)); }
-.cat-sports { background: linear-gradient(135deg, rgba(255, 159, 10, 0.25), rgba(255, 56, 128, 0.2)); }
-
-/* ── Custom Scrollbar ── */
-::-webkit-scrollbar { width: 5px; height: 5px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 9999px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
-
-.no-scrollbar::-webkit-scrollbar { display: none; }
-.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-/* ── Responsive News Grid Layout (Balanced 2-Column Bento Structure) ── */
+/* ── Responsive News Grid Layout ── */
 .news-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -291,4 +237,14 @@ body {
 /* Bottom safe-area for mobile dock */
 .pb-mobile-dock {
   padding-bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px));
+}
+
+/* ── Accessibility & Performance: Respect Reduced Motion ── */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

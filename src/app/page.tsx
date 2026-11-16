@@ -65,21 +65,27 @@ export default function Home() {
       if (storedView) setViewMode(storedView as ViewMode);
       const storedRegion = localStorage.getItem("digital-daily-region");
       if (storedRegion) setActiveRegion(storedRegion as Region | "All");
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
   }, []);
 
   const handleViewModeChange = (mode: ViewMode) => {
     setViewMode(mode);
     try {
       localStorage.setItem("digital-daily-view-mode", mode);
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
   };
 
   const handleRegionChange = (region: Region | "All") => {
     setActiveRegion(region);
     try {
       localStorage.setItem("digital-daily-region", region);
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
   };
 
   useEffect(() => {
@@ -109,7 +115,9 @@ export default function Home() {
     }
   }, []);
 
-  useEffect(() => { fetchNews(); }, [fetchNews]);
+  useEffect(() => {
+    fetchNews();
+  }, [fetchNews]);
 
   useEffect(() => {
     if (articles.length === 0) return;
@@ -131,8 +139,17 @@ export default function Home() {
 
   const handleSourceToggle = useCallback((source: string) => {
     setDisabledSources((prev) => {
-      const next = prev.includes(source) ? prev.filter((s) => s !== source) : [...prev, source];
-      try { localStorage.setItem("digital-daily-disabled-sources", JSON.stringify(next)); } catch { /* ignore */ }
+      const next = prev.includes(source)
+        ? prev.filter((s) => s !== source)
+        : [...prev, source];
+      try {
+        localStorage.setItem(
+          "digital-daily-disabled-sources",
+          JSON.stringify(next)
+        );
+      } catch {
+        /* ignore */
+      }
       return next;
     });
   }, []);
@@ -164,7 +181,8 @@ export default function Home() {
 
   const featured = useMemo(() => {
     const withImages = searchFiltered.filter((a) => a.imageUrl);
-    if (withImages.length >= FEATURED_COUNT) return withImages.slice(0, FEATURED_COUNT);
+    if (withImages.length >= FEATURED_COUNT)
+      return withImages.slice(0, FEATURED_COUNT);
     const without = searchFiltered.filter((a) => !a.imageUrl);
     return [...withImages, ...without].slice(0, FEATURED_COUNT);
   }, [searchFiltered]);
@@ -189,9 +207,7 @@ export default function Home() {
     () =>
       searchFiltered.filter(
         (a) =>
-          BREAKING_KEYWORDS.some((kw) =>
-            a.title.toLowerCase().includes(kw)
-          ) ||
+          BREAKING_KEYWORDS.some((kw) => a.title.toLowerCase().includes(kw)) ||
           a.category === "Politics & World"
       ),
     [searchFiltered]
@@ -207,7 +223,7 @@ export default function Home() {
     if (searchEl) {
       searchEl.scrollIntoView({ behavior: "smooth", block: "center" });
       const input = searchEl.querySelector("input");
-      input?.focus();
+      input?.focus({ preventScroll: true });
     } else {
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
@@ -230,7 +246,7 @@ export default function Home() {
         }}
       />
 
-      {/* Sticky All-in-One Live Pulse Ticker (Weather, Stocks & Sports) */}
+      {/* Sticky Live Sports & Pulse Ticker */}
       <div className="sticky top-[58px] z-40">
         <LiveSportsTicker onOpenPulse={() => setPulseDrawerOpen(true)} />
       </div>
@@ -238,17 +254,17 @@ export default function Home() {
       <div className="relative">
         {/* Dynamic Breaking News Alert Bar */}
         {!loading && breakingArticles.length > 0 && (
-          <div className="mx-auto mb-4 mt-2 max-w-7xl 2xl:max-w-[1536px] px-4 sm:px-6 lg:px-8">
-            <div className="ios-glass rounded-full px-3.5 py-1.5 sm:px-5 sm:py-2 border border-rose-500/20 shadow-[0_0_20px_rgba(244,63,94,0.1)] flex items-center justify-between gap-3">
+          <div className="mx-auto mb-3 mt-2 max-w-7xl 2xl:max-w-[1536px] px-4 sm:px-6 lg:px-8">
+            <div className="ios-glass rounded-full px-3.5 py-1.5 sm:px-5 sm:py-2 border border-rose-500/25 flex items-center justify-between gap-3">
               <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                <span className="flex-shrink-0 rounded-full bg-rose-500/20 border border-rose-500/30 px-2.5 py-0.5 text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider text-rose-300 flex items-center gap-1.5">
+                <span className="flex-shrink-0 rounded-full bg-rose-500/15 border border-rose-500/30 px-2.5 py-0.5 text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-rose-300 flex items-center gap-1.5">
                   <span className="h-1.5 w-1.5 rounded-full bg-rose-400 live-badge-beacon" />
                   Breaking
                 </span>
                 <div className="overflow-hidden min-w-0 flex-1">
                   <p
                     key={tickerIndex}
-                    className="animate-fadeIn truncate text-xs sm:text-sm text-white/70 font-medium"
+                    className="truncate text-xs sm:text-sm text-zinc-300 font-medium"
                   >
                     <a
                       href={breakingArticles[tickerIndex]?.url}
@@ -264,7 +280,7 @@ export default function Home() {
 
               <button
                 onClick={() => handleOpenStoryRing("All")}
-                className="hidden sm:inline-flex items-center gap-1 text-[11px] font-bold text-rose-400 hover:text-rose-300 transition-colors shrink-0"
+                className="hidden sm:inline-flex items-center gap-1 text-[11px] font-semibold text-rose-300 hover:text-white transition-colors shrink-0"
               >
                 Watch 60s <ArrowRight size={11} />
               </button>
@@ -294,7 +310,9 @@ export default function Home() {
                   />
                 </div>
                 <div className="flex items-center justify-between sm:justify-end gap-2">
-                  <span className="text-[11px] text-white/40 sm:hidden">Layout:</span>
+                  <span className="text-[11px] text-zinc-400 font-mono sm:hidden">
+                    Layout:
+                  </span>
                   <ViewModeToggle
                     viewMode={viewMode}
                     onViewModeChange={handleViewModeChange}
@@ -304,14 +322,16 @@ export default function Home() {
 
               {/* ── Regional Filter Pills (India, USA, Europe, Global) ── */}
               <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1">
-                <div className="flex items-center gap-1 text-[11px] font-bold text-white/40 uppercase tracking-wider mr-1 shrink-0">
-                  <Globe2 size={12} className="text-cyan-400" />
+                <div className="flex items-center gap-1 text-[11px] font-bold text-zinc-400 uppercase tracking-wider mr-1 shrink-0 font-mono">
+                  <Globe2 size={12} className="text-zinc-400" />
                   <span>Region:</span>
                 </div>
                 <button
                   onClick={() => handleRegionChange("All")}
-                  className={`ios-pill text-xs font-semibold shrink-0 ${
-                    activeRegion === "All" ? "ios-pill-active" : "ios-pill-inactive"
+                  className={`ios-pill text-xs font-medium shrink-0 active:scale-95 ${
+                    activeRegion === "All"
+                      ? "ios-pill-active"
+                      : "ios-pill-inactive"
                   }`}
                 >
                   All Regions
@@ -322,7 +342,7 @@ export default function Home() {
                     <button
                       key={region}
                       onClick={() => handleRegionChange(region)}
-                      className={`ios-pill text-xs font-semibold shrink-0 ${
+                      className={`ios-pill text-xs font-medium shrink-0 active:scale-95 ${
                         isActive ? "ios-pill-active" : "ios-pill-inactive"
                       }`}
                     >
@@ -345,21 +365,26 @@ export default function Home() {
               <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
                 <button
                   onClick={() => setActiveCategory(null)}
-                  className="ios-pill ios-pill-inactive text-xs hover:bg-white/[0.06] hover:text-white"
+                  className="ios-pill ios-pill-inactive text-xs hover:bg-white/[0.06] hover:text-white active:scale-95"
                 >
                   ← All Stories
                 </button>
                 <div className="flex items-center gap-3">
                   <h1 className="text-lg sm:text-xl font-bold text-white tracking-tight">
-                    {activeCategory} {activeRegion !== "All" ? `(${REGION_LABELS[activeRegion]})` : ""}
+                    {activeCategory}{" "}
+                    {activeRegion !== "All"
+                      ? `(${REGION_LABELS[activeRegion]})`
+                      : ""}
                   </h1>
                 </div>
               </div>
 
               {filtered.length === 0 ? (
                 <div className="ios-glass rounded-3xl p-12 text-center border border-white/10">
-                  <Sparkles size={32} className="mx-auto mb-3 text-white/20" />
-                  <p className="text-sm text-white/40">No stories found matching the current filters.</p>
+                  <Sparkles size={32} className="mx-auto mb-3 text-zinc-600" />
+                  <p className="text-sm text-zinc-400">
+                    No stories found matching the current filters.
+                  </p>
                 </div>
               ) : (
                 <div
@@ -372,7 +397,11 @@ export default function Home() {
                   }
                 >
                   {filtered.map((article, i) => (
-                    <NewsCard key={article.id + i} article={article} viewMode={viewMode} />
+                    <NewsCard
+                      key={article.id + i}
+                      article={article}
+                      viewMode={viewMode}
+                    />
                   ))}
                 </div>
               )}
@@ -381,7 +410,7 @@ export default function Home() {
 
           {/* Skeletons while loading */}
           {loading && (
-            <div className="space-y-8">
+            <div className="space-y-6">
               <SkeletonHero />
               <SkeletonGrid />
             </div>
@@ -389,10 +418,13 @@ export default function Home() {
 
           {/* Error display */}
           {error && (
-            <div className="ios-glass rounded-3xl p-8 text-center border border-red-500/20">
-              <p className="text-sm text-red-400/80">{error}</p>
+            <div className="ios-glass rounded-3xl p-8 text-center border border-rose-500/20">
+              <p className="text-sm text-rose-300">{error}</p>
               <button
-                onClick={() => { setLoading(true); fetchNews(); }}
+                onClick={() => {
+                  setLoading(true);
+                  fetchNews();
+                }}
                 className="mt-4 ios-pill ios-pill-inactive text-xs hover:text-white"
               >
                 Retry News Stream
@@ -402,8 +434,8 @@ export default function Home() {
 
           {/* Category Sections & Sticky Sidebar */}
           {!loading && !error && !activeCategory && searchFiltered.length > 0 && (
-            <div className="grid gap-10 lg:grid-cols-3">
-              <div className="space-y-10 lg:col-span-2">
+            <div className="grid gap-8 lg:grid-cols-3">
+              <div className="space-y-8 lg:col-span-2">
                 {CATEGORIES.map((cat) => (
                   <CategorySection
                     key={cat}
@@ -442,7 +474,7 @@ export default function Home() {
         onClose={() => setPulseDrawerOpen(false)}
       />
 
-      {/* Floating 2026 Dynamic Glass Dock for Mobile */}
+      {/* Floating Dynamic Glass Dock for Mobile */}
       <MobileBottomDock
         onOpenStories={() => {
           setStoryInitialCategory("All");

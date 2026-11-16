@@ -1,18 +1,15 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
 const siteUrl = "https://digital-daily.vercel.app";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  viewportFit: "cover",
+  themeColor: "#09090b",
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -68,16 +65,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="relative min-h-full bg-black font-sans text-white">
-        {/* Liquid gradient ambient orbs */}
+    <html lang="en" className="h-full antialiased dark">
+      <body className="relative min-h-full bg-[#09090b] font-sans text-zinc-100 selection:bg-zinc-800 selection:text-white">
+        {/* Subtle, refined editorial ambient depth */}
         <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-          <div className="orb-1 absolute -left-48 -top-48 h-[600px] w-[600px] rounded-full bg-gradient-to-br from-fuchsia-500/15 via-purple-500/10 to-transparent blur-3xl" />
-          <div className="orb-2 absolute -bottom-48 -right-48 h-[500px] w-[500px] rounded-full bg-gradient-to-br from-cyan-400/15 via-blue-500/10 to-transparent blur-3xl" />
-          <div className="orb-3 absolute left-1/3 top-1/2 h-[400px] w-[400px] rounded-full bg-gradient-to-br from-pink-500/10 via-rose-500/8 to-transparent blur-3xl" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-20%,rgba(120,119,198,0.06),transparent_70%)]" />
+          <div className="absolute inset-0 bg-[linear-gradient(to_bottom,transparent,rgba(9,9,11,0.8)_60%,#09090b)]" />
         </div>
         <div className="relative z-10">{children}</div>
       </body>

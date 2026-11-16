@@ -23,6 +23,9 @@ export interface WeatherData {
   city: string;
   country: string;
   description: string;
+  lat?: number;
+  lon?: number;
+  isAuto?: boolean;
 }
 
 export const CATEGORIES: Category[] = [
